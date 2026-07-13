@@ -1,0 +1,9 @@
+# Exécution
+pywebview>=5.0
+cryptography>=42.0
+
+# Build de l'exe
+pyinstaller>=6.0
+
+# Dev : régénérer pack_manager.py depuis pack_manager.source.py
+python-minifier>=3.2
