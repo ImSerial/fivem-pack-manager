@@ -27,10 +27,15 @@ state.json
 # Build
 build/
 dist/
+dist_installeur/
 *.spec
 __pycache__/
 *.pyc
 FiveMPackManager.exe
 pm_debug.exe
+# regenere par build.py depuis APP_VERSION
+version_info.txt
+# apercu de controle, pas un asset
+app_icon_preview.png
 
 .claude/

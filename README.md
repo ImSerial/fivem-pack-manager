@@ -1,20 +1,18 @@
 <div align="center">
 
-<img src=".github/assets/banner.svg" alt="FiveM Pack Manager" width="100%">
+<img src=".github/assets/banner.png" alt="FiveM Pack Manager" width="820">
 
-<br>
+<br><br>
 
-![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0a0a0a?style=for-the-badge&logo=windows11&logoColor=white&labelColor=000000)
-![Python](https://img.shields.io/badge/Python-3.10+-0a0a0a?style=for-the-badge&logo=python&logoColor=white&labelColor=000000)
-![Standalone](https://img.shields.io/badge/exe-100%25%20autonome-0a0a0a?style=for-the-badge&labelColor=000000)
-![Setup](https://img.shields.io/badge/configuration-aucune-0a0a0a?style=for-the-badge&labelColor=000000)
+[![Télécharger](https://img.shields.io/badge/⬇%20T%C3%A9l%C3%A9charger-la%20derni%C3%A8re%20version-white?style=for-the-badge&labelColor=000000&color=ffffff)](../../releases/latest)
+
+![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0a0a0a?style=flat-square&logo=windows11&logoColor=white&labelColor=000000)
+![Python](https://img.shields.io/badge/Python-3.10+-0a0a0a?style=flat-square&logo=python&logoColor=white&labelColor=000000)
+![Installeur](https://img.shields.io/badge/installeur-sans%20UAC-0a0a0a?style=flat-square&labelColor=000000)
+![Configuration](https://img.shields.io/badge/configuration-aucune-0a0a0a?style=flat-square&labelColor=000000)
 
 **Installe et désinstalle tes packs graphiques FiveM en un clic.**
 QuantV · NVE · ReShade · ENB · mods · plugins
-
-<br>
-
-<img src="https://github.com/user-attachments/assets/d551e536-6a45-416a-bb89-2f08a2e3f136" alt="Interface de FiveM Pack Manager" width="880">
 
 </div>
 
@@ -29,6 +27,10 @@ revenir en arrière.
 
 **Cette app fait tout ça pour toi, et sait défaire ce qu'elle a fait.**
 
+<div align="center">
+<img src="https://github.com/user-attachments/assets/d551e536-6a45-416a-bb89-2f08a2e3f136" alt="Interface de FiveM Pack Manager" width="820">
+</div>
+
 <img src=".github/assets/divider.svg" alt="" width="100%">
 
 ## Installation
@@ -37,13 +39,13 @@ revenir en arrière.
 <tr>
 <td width="50%" valign="top">
 
-### ⚡ Prêt à l'emploi
+### ⚡ Installeur
 
-Télécharge `FiveMPackManager.exe` depuis les [**Releases**](../../releases)
-et double-clique.
+Télécharge le `.exe` depuis les [**Releases**](../../releases/latest) et
+double-clique.
 
-Aucune installation, aucune configuration, aucune dépendance.
-Les packs apparaissent tout seuls au lancement.
+Pas de droits administrateur, pas d'UAC. Raccourci Menu Démarrer, entrée dans
+« Applications et fonctionnalités », désinstallation propre.
 
 </td>
 <td width="50%" valign="top">
@@ -62,6 +64,12 @@ Lancer.bat
 </td>
 </tr>
 </table>
+
+> [!NOTE]
+> **« Windows a protégé votre PC » au premier lancement ?** C'est normal :
+> l'application n'est pas signée par un certificat payant. Clique sur
+> **Informations complémentaires** puis **Exécuter quand même**. Le code
+> source est entièrement dans ce dépôt, tu peux le lire.
 
 <img src=".github/assets/divider.svg" alt="" width="100%">
 
@@ -146,8 +154,8 @@ chemins connus dont les variantes *Legacy*). Réglables à la main dans
 
 **🔒 Avant**
 
-Refuse de travailler si FiveM ou GTA V tourne. Vérifie l'espace disque. Garde
-anti double-chargement.
+Refuse de travailler si FiveM ou GTA V tourne. Vérifie l'espace disque sur
+chaque disque concerné. Garde anti double-chargement.
 
 </td>
 <td width="33%" valign="top">
@@ -170,8 +178,13 @@ Le jeu revient propre.
 </table>
 
 Un dossier remplacé en entier (`enbseries`, `reshade-shaders`…) est mis de côté
-complet, jamais mélangé avec l'ancien. `citizen`, `update`, `x64`, `dlcpacks` ne
-sont jamais purgés : fusion classique, avec sauvegarde fichier par fichier.
+complet, jamais mélangé avec l'ancien, et remis au déchargement. `citizen`,
+`update`, `x64`, `dlcpacks` ne sont jamais purgés : fusion classique, avec
+sauvegarde fichier par fichier.
+
+Les téléchargements **reprennent après une coupure réseau** au lieu de tout
+recommencer, et le désinstalleur refuse de partir tant qu'un pack est encore
+installé dans le jeu.
 
 <img src=".github/assets/divider.svg" alt="" width="100%">
 
@@ -183,7 +196,7 @@ sont jamais purgés : fusion classique, avec sauvegarde fichier par fichier.
 <tr>
 <td align="center" width="25%"><b>Google Drive</b><br><sub>fichier ou dossier entier</sub></td>
 <td align="center" width="25%"><b>Mega.nz</b><br><sub>déchiffrement AES client</sub></td>
-<td align="center" width="25%"><b>Gofile</b><br><sub>résolution via API</sub></td>
+<td align="center" width="25%"><b>Gofile</b><br><sub>API fermée, voir dépannage</sub></td>
 <td align="center" width="25%"><b>Lien direct</b><br><sub>.rar · .zip · .7z</sub></td>
 </tr>
 </table>
@@ -226,13 +239,15 @@ propre `embedded_config.json`.
 
 | Champ | Rôle |
 |---|---|
-| `name` | obligatoire, sert d'identifiant |
+| `name` | obligatoire, sert d'identifiant et de nom de dossier |
 | `url` | lien externe direct vers l'archive |
 | `file` | *alternative à `url`* : fichier posé à côté du `packs.json` |
 | `version` | incrémente-la pour forcer le re-téléchargement |
 | `size` | affiché sur la carte avant téléchargement |
 | `image` | lien externe, ou fichier à côté du `packs.json` |
 | `preview` | lien vidéo, affiche un bouton Preview |
+
+Une entrée mal formée est ignorée, elle ne casse pas le reste de la liste.
 
 </details>
 
@@ -250,27 +265,43 @@ location /mon-dossier-packs/ {
         return 404;
     }
 
-    add_header Accept-Ranges bytes;   # reprise de téléchargement
+    add_header Accept-Ranges bytes;   # indispensable : reprise après coupure
 }
 ```
 
 </details>
 
-<details>
-<summary><b>Builder l'exe</b></summary>
+<img src=".github/assets/divider.svg" alt="" width="100%">
 
-<br>
+## Compiler soi-même
 
 ```bash
 python -m pip install -r requirements.txt
-
-python -m PyInstaller --onefile --noconsole --name FiveMPackManager ^
-  --collect-all webview --collect-all cryptography ^
-  pack_manager.py
+python build.py
 ```
 
+`build.py` enchaîne tout : icône, obfuscation du source, exe PyInstaller en
+`--onedir`, puis installeur Inno Setup. La version vient de `APP_VERSION` dans
+`pack_manager.source.py`, seule source de vérité.
+
+<details>
+<summary><b>Options et prérequis</b></summary>
+
+<br>
+
+| Commande | Effet |
+|---|---|
+| `python build.py` | tout : exe + installeur |
+| `python build.py --exe` | s'arrête après l'exe |
+| `python build.py --iss` | recompile juste l'installeur |
+| `python faire_icone.py` | régénère `app.ico` depuis le logo |
+
+L'installeur nécessite [Inno Setup 6](https://jrsoftware.org/isinfo.php) :
+`winget install JRSoftware.InnoSetup`
+
 Pour pointer sur ton propre serveur, crée un `embedded_config.json` à côté du
-script et ajoute `--add-data "embedded_config.json;."` à la commande :
+script et ajoute `--add-data "embedded_config.json;."` à la commande
+PyInstaller :
 
 ```json
 {
@@ -293,12 +324,14 @@ valeurs du code  →  embedded_config.json  →  config.json
 
 | Symptôme | Cause |
 |---|---|
+| « Windows a protégé votre PC » | application non signée — Informations complémentaires → Exécuter quand même |
 | « Aucun pack disponible » | serveur injoignable ou URL invalide → **Actualiser**, puis Options → Avancé |
 | « FiveM est ouvert » | ferme le jeu **et** le launcher, ils verrouillent les fichiers |
 | Extraction impossible sur un `.rar` | installe WinRAR ou 7-Zip |
 | Le pack se télécharge mais n'installe rien | archive rangée d'une façon inconnue — la console détaille ce qui a été trouvé |
-| Téléchargement interrompu | reprend tout seul là où il s'était arrêté, jusqu'à 4 fois. Un lien mort échoue immédiatement, sans attente |
+| Téléchargement interrompu | reprend tout seul là où il s'était arrêté, jusqu'à 4 fois. Un lien mort échoue immédiatement |
 | « Gofile ne fonctionne plus » | Gofile a fermé son API publique — ré-héberge le pack sur Drive ou Mega |
+| Désinstallation refusée | des packs sont encore chargés : décharge-les d'abord, sinon ton jeu resterait modifié |
 
 <img src=".github/assets/divider.svg" alt="" width="100%">
 
@@ -310,22 +343,27 @@ valeurs du code  →  embedded_config.json  →  config.json
 <br>
 
 L'interface est du HTML/CSS/JS servi par un petit serveur HTTP local
-(`127.0.0.1`, protégé par jeton), affiché dans une fenêtre
-[pywebview](https://pywebview.flowrl.com/). Ce choix contourne un blocage du
-pont natif pywebview une fois l'application compilée en exe.
+(`127.0.0.1`, protégé par jeton, en-tête `Host` vérifiée), affiché dans une
+fenêtre [pywebview](https://pywebview.flowrl.com/). Ce choix contourne un
+blocage du pont natif pywebview une fois l'application compilée en exe.
 
-Extraction : `zipfile` natif, puis UnRAR → WinRAR → 7-Zip → tar, chaque outil
-installé étant essayé jusqu'au premier qui réussit.
+Extraction : `zipfile` natif avec contrôle anti-traversée, puis
+UnRAR → WinRAR → 7-Zip → tar, chaque outil installé étant essayé jusqu'au
+premier qui réussit, avec un délai maximum et sans jamais demander de mot de
+passe.
 
 | Fichier | Rôle |
 |---|---|
 | `pack_manager.py` | toute l'application |
+| `build.py` | chaîne de build complète |
+| `installeur.iss` | script Inno Setup |
+| `faire_icone.py` | génère `app.ico` depuis le logo |
 | `Lancer.bat` | lance depuis le source, installe les dépendances au besoin |
-| `requirements.txt` | dépendances Python |
 
-Les données de travail (cache des packs, sauvegardes, réglages, image de fond)
-vivent dans `%LOCALAPPDATA%\FiveMPackManager\` pour l'exe, et à côté du script
-en mode développement.
+Les données de travail (cache des packs, sauvegardes des fichiers d'origine,
+réglages, image de fond) vivent dans `%LOCALAPPDATA%\FiveMPackManager\` pour
+l'exe, et à côté du script en mode développement. Elles survivent à la
+désinstallation, sauf si tu demandes explicitement leur suppression.
 
 </details>
 
