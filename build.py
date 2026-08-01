@@ -51,11 +51,11 @@ VSVersionInfo(
   kids=[
     StringFileInfo([
       StringTable('040C04B0', [
-        StringStruct('CompanyName', 'uxqt.site'),
+        StringStruct('CompanyName', 'modium.xyz'),
         StringStruct('FileDescription', 'Modium'),
         StringStruct('FileVersion', '{v}'),
         StringStruct('InternalName', '{NAME}'),
-        StringStruct('LegalCopyright', 'uxqt.site'),
+        StringStruct('LegalCopyright', 'modium.xyz'),
         StringStruct('OriginalFilename', '{NAME}.exe'),
         StringStruct('ProductName', 'Modium'),
         StringStruct('ProductVersion', '{v}')])

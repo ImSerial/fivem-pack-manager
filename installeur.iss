@@ -8,8 +8,8 @@
 
 #define AppName    "Modium"
 #define AppExe     "Modium.exe"
-#define AppPublisher "uxqt.site"
-#define AppUrl     "https://uxqt.site"
+#define AppPublisher "modium.xyz"
+#define AppUrl     "https://modium.xyz"
 
 [Setup]
 AppId={{8E2F5A31-7C4D-4B9E-A6F3-1D0B2C5E7A94}
