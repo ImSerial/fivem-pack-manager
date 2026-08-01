@@ -1,0 +1,33 @@
+# Secrets — ne jamais commit
+admin-vps.json
+embedded_config.json
+config.json
+packs.reel.json
+
+# Source claire — seul pack_manager.py (obfusqué) part sur GitHub
+pack_manager.source.py
+
+# Scripts admin (pousser_packs.py utilise admin-vps.json ;
+# tailles_packs.py importe pack_manager.source.py, non publié)
+pousser_packs.py
+tailles_packs.py
+
+# Mémoire projet : décrit l'infra du VPS, reste en local
+MEMOIRE.md
+
+# Données locales de l'app (dev)
+background.gif
+packs/
+_backups/
+state.json
+
+# Build
+build/
+dist/
+*.spec
+__pycache__/
+*.pyc
+FiveMPackManager.exe
+pm_debug.exe
+
+.claude/
