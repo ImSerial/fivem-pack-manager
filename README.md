@@ -297,7 +297,8 @@ valeurs du code  →  embedded_config.json  →  config.json
 | « FiveM est ouvert » | ferme le jeu **et** le launcher, ils verrouillent les fichiers |
 | Extraction impossible sur un `.rar` | installe WinRAR ou 7-Zip |
 | Le pack se télécharge mais n'installe rien | archive rangée d'une façon inconnue — la console détaille ce qui a été trouvé |
-| Vignette pas à jour | l'image est mise en cache au premier téléchargement du pack |
+| Téléchargement interrompu | reprend tout seul là où il s'était arrêté, jusqu'à 4 fois. Un lien mort échoue immédiatement, sans attente |
+| « Gofile ne fonctionne plus » | Gofile a fermé son API publique — ré-héberge le pack sur Drive ou Mega |
 
 <img src=".github/assets/divider.svg" alt="" width="100%">
 
