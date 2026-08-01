@@ -1,4 +1,4 @@
-; Installeur FiveM Pack Manager (Inno Setup 6)
+; Installeur Modium (Inno Setup 6)
 ; Compilation : build.py s'en charge, ou ISCC.exe installeur.iss
 ; La version est injectee par build.py depuis APP_VERSION du source.
 
@@ -6,8 +6,8 @@
   #define AppVersion "2.1.0"
 #endif
 
-#define AppName    "FiveM Pack Manager"
-#define AppExe     "FiveMPackManager.exe"
+#define AppName    "Modium"
+#define AppExe     "Modium.exe"
 #define AppPublisher "uxqt.site"
 #define AppUrl     "https://uxqt.site"
 
@@ -17,7 +17,7 @@ AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppUrl}
-AppSupportURL=https://github.com/ImSerial/fivem-pack-manager
+AppSupportURL=https://github.com/ImSerial/modium
 VersionInfoVersion={#AppVersion}
 
 ; Installation par utilisateur : aucun UAC, aucun droit administrateur.
@@ -28,7 +28,7 @@ DisableProgramGroupPage=yes
 DefaultGroupName={#AppName}
 
 OutputDir=dist_installeur
-OutputBaseFilename=FiveMPackManager-Setup-{#AppVersion}
+OutputBaseFilename=Modium-Setup-{#AppVersion}
 SetupIconFile=app.ico
 UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppName}
@@ -51,10 +51,10 @@ Name: "desktopicon"; Description: "Créer un raccourci sur le Bureau"; \
   GroupDescription: "Raccourcis :"
 
 [Files]
-; Build --onedir : tout le dossier dist\FiveMPackManager.
+; Build --onedir : tout le dossier dist\Modium.
 ; Demarrage quasi instantane, contre plusieurs secondes en --onefile qui
 ; redecompressait 17 Mo dans le dossier temporaire a chaque lancement.
-Source: "dist\FiveMPackManager\*"; DestDir: "{app}"; \
+Source: "dist\Modium\*"; DestDir: "{app}"; \
   Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
@@ -68,7 +68,7 @@ Filename: "{app}\{#AppExe}"; Description: "Lancer {#AppName}"; \
 
 [UninstallDelete]
 ; Le dossier de l'app seulement. Les donnees (cache des packs, sauvegardes
-; des fichiers d'origine, reglages) vivent dans %LOCALAPPDATA%\FiveMPackManager
+; des fichiers d'origine, reglages) vivent dans %LOCALAPPDATA%\Modium
 ; et sont traitees dans InitializeUninstall / CurUninstallStepChanged.
 Type: filesandordirs; Name: "{app}"
 
@@ -80,7 +80,7 @@ const
 
 function DataDir(): String;
 begin
-  Result := ExpandConstant('{localappdata}\FiveMPackManager');
+  Result := ExpandConstant('{localappdata}\Modium');
 end;
 
 // Refuse la desinstallation tant qu'un pack est installe dans le jeu.
@@ -93,7 +93,7 @@ var
   Code: Integer;
 begin
   Result := True;
-  Exe := ExpandConstant('{app}\FiveMPackManager.exe');
+  Exe := ExpandConstant('{app}\Modium.exe');
   if not FileExists(Exe) then
     Exit;
   if not Exec(Exe, '--check-loaded', '', SW_HIDE, ewWaitUntilTerminated, Code) then
@@ -101,7 +101,7 @@ begin
   if Code = 1 then
   begin
     MsgBox('Des packs sont encore chargés dans FiveM ou GTA V.' + NL + NL +
-           'Ouvre FiveM Pack Manager et décharge-les avant de désinstaller.' +
+           'Ouvre Modium et décharge-les avant de désinstaller.' +
            NL + NL +
            'Sinon les fichiers d''origine de ton jeu, sauvegardés par l''app, ' +
            'seraient perdus et le jeu resterait modifié définitivement.',

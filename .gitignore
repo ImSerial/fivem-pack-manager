@@ -31,6 +31,7 @@ dist_installeur/
 *.spec
 __pycache__/
 *.pyc
+Modium.exe
 FiveMPackManager.exe
 pm_debug.exe
 # regenere par build.py depuis APP_VERSION

@@ -18,7 +18,7 @@ ONLY_ISS = "--iss" in sys.argv
 
 SOURCE = "pack_manager.source.py"
 GENERATED = "pack_manager.py"
-NAME = "FiveMPackManager"
+NAME = "Modium"
 
 
 def run(cmd, label):
@@ -52,12 +52,12 @@ VSVersionInfo(
     StringFileInfo([
       StringTable('040C04B0', [
         StringStruct('CompanyName', 'uxqt.site'),
-        StringStruct('FileDescription', 'FiveM Pack Manager'),
+        StringStruct('FileDescription', 'Modium'),
         StringStruct('FileVersion', '{v}'),
         StringStruct('InternalName', '{NAME}'),
         StringStruct('LegalCopyright', 'uxqt.site'),
         StringStruct('OriginalFilename', '{NAME}.exe'),
-        StringStruct('ProductName', 'FiveM Pack Manager'),
+        StringStruct('ProductName', 'Modium'),
         StringStruct('ProductVersion', '{v}')])
     ]),
     VarFileInfo([VarStruct('Translation', [1036, 1200])])
@@ -83,7 +83,7 @@ def find_iscc() -> str:
 
 
 v = version()
-print(f"FiveM Pack Manager {v}")
+print(f"Modium {v}")
 
 if not ONLY_ISS:
     if not os.path.exists("app.ico"):

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src=".github/assets/banner.png" alt="FiveM Pack Manager" width="820">
+<img src=".github/assets/banner.png" alt="Modium" width="820">
 
 <br><br>
 
@@ -28,7 +28,7 @@ revenir en arrière.
 **Cette app fait tout ça pour toi, et sait défaire ce qu'elle a fait.**
 
 <div align="center">
-<img src="https://github.com/user-attachments/assets/d551e536-6a45-416a-bb89-2f08a2e3f136" alt="Interface de FiveM Pack Manager" width="820">
+<img src="https://github.com/user-attachments/assets/d551e536-6a45-416a-bb89-2f08a2e3f136" alt="Interface de Modium" width="820">
 </div>
 
 <img src=".github/assets/divider.svg" alt="" width="100%">
@@ -56,8 +56,8 @@ Nécessite [Python 3.10+](https://www.python.org/downloads/)
 avec *Add Python to PATH* coché.
 
 ```bash
-git clone https://github.com/ImSerial/fivem-pack-manager
-cd fivem-pack-manager
+git clone https://github.com/ImSerial/modium
+cd modium
 Lancer.bat
 ```
 
@@ -361,7 +361,7 @@ passe.
 | `Lancer.bat` | lance depuis le source, installe les dépendances au besoin |
 
 Les données de travail (cache des packs, sauvegardes des fichiers d'origine,
-réglages, image de fond) vivent dans `%LOCALAPPDATA%\FiveMPackManager\` pour
+réglages, image de fond) vivent dans `%LOCALAPPDATA%\Modium\` pour
 l'exe, et à côté du script en mode développement. Elles survivent à la
 désinstallation, sauf si tu demandes explicitement leur suppression.
 
@@ -370,5 +370,5 @@ désinstallation, sauf si tu demandes explicitement leur suppression.
 <br>
 
 <div align="center">
-<sub>Fait pour la commu FiveM · <a href="https://uxqt.site">uxqt.site</a></sub>
+<sub>Fait pour la commu FiveM · <a href="https://modium.xyz">modium.xyz</a></sub>
 </div>
