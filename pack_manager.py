@@ -81,7 +81,7 @@ import base64 as At,json as K,os as A,re as I,secrets as Au,shutil as J,struct a
 from http.server import BaseHTTPRequestHandler as BZ,ThreadingHTTPServer as Ba
 import webview as Aw
 Bb=BO
-A7='3.0.2'
+A7='3.0.3'
 r=f"Modium/{A7}"
 Ax='ImSerial/modium'
 Bc='FiveMPackManager'
@@ -97,7 +97,7 @@ T=A.path.join(e,Ag)
 Ay=A.path.join(e,'_backups')
 AO=A.path.join(e,'state.json')
 AP=A.path.join(e,'config.json')
-Be={i:'https://uxqt.site/packs-096759e8/packs.json',v:'glt7ExuP7EBzBc56fUzoAmHy618FWBhT'}
+Be={i:'https://modium.xyz/packs-096759e8/packs.json',v:'glt7ExuP7EBzBc56fUzoAmHy618FWBhT'}
 def Bf():
 	B=g(Be);C=[A.path.dirname(A.path.abspath(__file__))]
 	if AB(q,'_MEIPASS',D):C.insert(0,q._MEIPASS)
