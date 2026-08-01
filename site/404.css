@@ -41,11 +41,7 @@ a{color:inherit; text-decoration:none}
 .boite{max-width:56ch; position:relative}
 .logo{display:inline-flex; align-items:center; gap:11px; font-weight:650; font-size:16.5px;
       margin-bottom:44px; text-shadow:0 0 18px rgba(255,255,255,.2)}
-.logo img{width:30px; height:30px; border-radius:9px}
-
-/* le 404 : chiffres géants en néon, avec une coupure qui passe dessus */
-.code{
-  font-family:var(--mono); font-weight:700; line-height:.92;
+.logo img{width:30px; height:30px; border-radius: 0; font-weight:700; line-height:.92;
   font-size:clamp(96px,22vw,210px); letter-spacing:-.04em; position:relative;
   background-image:linear-gradient(100deg,#fff 0%,#fff 32%,#8d8d97 52%,#fff 72%,#fff 100%);
   background-size:220% 100%;
@@ -77,7 +73,7 @@ h1{font-size:clamp(21px,3.4vw,29px); font-weight:730; letter-spacing:-.02em;
 p{color:var(--dim); font-size:16px; margin-bottom:34px}
 .chemin{
   display:inline-block; font-family:var(--mono); font-size:12px; color:var(--faint);
-  border:1px solid var(--hair); border-radius:999px; padding:7px 16px;
+  border:1px solid var(--hair); border-radius: 0; padding:7px 16px;
   margin-bottom:30px; max-width:100%; overflow:hidden; text-overflow:ellipsis;
   white-space:nowrap; background:#000;
 }
@@ -86,7 +82,7 @@ p{color:var(--dim); font-size:16px; margin-bottom:34px}
 .actions{display:flex; gap:13px; justify-content:center; flex-wrap:wrap}
 .btn{
   display:inline-flex; align-items:center; gap:9px; justify-content:center;
-  border-radius:999px; font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+  border-radius: 0; font-family:var(--mono); font-size:11px; letter-spacing:.18em;
   text-transform:uppercase; padding:0 26px; height:48px; border:1px solid var(--hair);
   background:#000; color:var(--text); cursor:pointer;
   transition:border-color .25s, box-shadow .25s, transform .18s var(--ease);
@@ -112,4 +108,14 @@ p{color:var(--dim); font-size:16px; margin-bottom:34px}
   .btn.primary{animation:none}
   .nappe{animation-duration:80s}
   .code::after,.grain{display:none}
+}
+
+@media(max-width:600px){
+  body{padding:30px 20px}
+  .code{font-size:clamp(74px,26vw,120px)}
+  .logo{margin-bottom:30px}
+  h1{font-size:clamp(19px,5.4vw,24px)}
+  .chemin{font-size:11px; max-width:100%}
+  .actions{flex-direction:column; align-items:stretch}
+  .btn{width:100%}
 }

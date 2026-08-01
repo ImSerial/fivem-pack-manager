@@ -124,7 +124,15 @@ if not ONLY_EXE:
         "construction de l'installeur")
     out = os.path.join("dist_installeur", f"{NAME}-Setup-{v}.exe")
     if os.path.exists(out):
+        # copie au nom fixe : le bouton du site pointe sur
+        # releases/latest/download/Modium-Setup.exe, qui n'existe que si un
+        # fichier porte EXACTEMENT ce nom dans la derniere release.
+        stable = os.path.join("dist_installeur", f"{NAME}-Setup.exe")
+        shutil.copyfile(out, stable)
         print(f"\nInstalleur : {out} — {os.path.getsize(out) / 1048576:.0f} Mo")
+        print(f"Copie au nom fixe : {stable}")
+        print("Publier les DEUX dans la release : le bouton du site pointe sur "
+              "releases/latest/download/Modium-Setup.exe")
         print("\nNON SIGNE : Windows affichera « Windows a protege votre PC ».")
         print("L'utilisateur doit cliquer « Informations complementaires » "
               "puis « Executer quand meme ».")
