@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 260" width="1000" height="260" role="img" aria-label="FiveM Pack Manager">
+  <title>FiveM Pack Manager</title>
+
+  <defs>
+    <linearGradient id="shimmer" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="45%"  stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="55%"  stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <animateTransform attributeName="gradientTransform" type="translate"
+                        values="-1 0; 1 0; -1 0" dur="6s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="50%"  stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M34 0H0V34" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+
+    <clipPath id="card">
+      <rect x="1" y="1" width="998" height="258" rx="16"/>
+    </clipPath>
+
+    <style>
+      .mono { font-family: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace; }
+
+      .title  { font-size: 46px; font-weight: 700; letter-spacing: 10px; }
+      .kicker { font-size: 12px; letter-spacing: 6px; fill: #8a8a8e; }
+      .sub    { font-size: 16px; letter-spacing: 1.2px; fill: #d8d8dc; }
+      .pill   { font-size: 11px; letter-spacing: 3px; fill: #c9c9ce; }
+
+      .fade-1 { opacity: 0; animation: fade .8s ease-out .15s forwards; }
+      .fade-2 { opacity: 0; animation: fade .8s ease-out .45s forwards; }
+      .fade-3 { opacity: 0; animation: fade .8s ease-out 1.5s forwards; }
+      .fade-4 { opacity: 0; animation: fade .8s ease-out 1.8s forwards; }
+      .fade-5 { opacity: 0; animation: fade .8s ease-out 2.1s forwards; }
+      @keyframes fade { to { opacity: 1; } }
+
+      /* le sous-titre se dévoile comme s'il était tapé */
+      .typer { animation: type 2s steps(46, end) .6s both; }
+      @keyframes type { from { width: 0; } to { width: 560px; } }
+
+      .caret { animation: blink 1s steps(1, end) infinite; }
+      @keyframes blink { 50% { opacity: 0; } }
+
+      .breathe { animation: breathe 5s ease-in-out infinite; transform-origin: center; }
+      @keyframes breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+
+      .sweep { animation: sweep 4.5s ease-in-out infinite; }
+      @keyframes sweep {
+        0%   { transform: translateX(-260px); opacity: 0; }
+        15%  { opacity: 1; }
+        85%  { opacity: 1; }
+        100% { transform: translateX(1000px); opacity: 0; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .fade-1, .fade-2, .fade-3, .fade-4, .fade-5 { opacity: 1; animation: none; }
+        .typer { animation: none; width: 560px; }
+        .caret, .breathe, .sweep { animation: none; }
+      }
+    </style>
+  </defs>
+
+  <g clip-path="url(#card)">
+    <rect width="1000" height="260" fill="#000000"/>
+    <rect width="1000" height="260" fill="url(#grid)"/>
+    <ellipse class="breathe" cx="810" cy="60" rx="300" ry="190" fill="url(#glow)"/>
+
+    <!-- ligne qui balaie la carte -->
+    <rect class="sweep" x="0" y="0" width="180" height="260" fill="url(#rule)" opacity="0.10"/>
+
+    <g class="fade-1">
+      <circle cx="58" cy="55" r="4" fill="#ffffff" class="breathe"/>
+      <text class="mono kicker" x="76" y="60">GTA V &#183; FIVEM &#183; ONE CLICK</text>
+    </g>
+
+    <text class="mono title fade-2" x="56" y="132" fill="url(#shimmer)">FiveM Pack Manager</text>
+
+    <!-- sous-titre révélé par un rectangle qui s'élargit -->
+    <clipPath id="reveal">
+      <rect class="typer" x="56" y="150" width="0" height="30"/>
+    </clipPath>
+    <g clip-path="url(#reveal)">
+      <text class="mono sub" x="56" y="172">Installe et desinstalle tes packs graphiques en un clic.</text>
+    </g>
+    <rect class="caret fade-3" x="620" y="153" width="9" height="20" fill="#ffffff"/>
+
+    <g class="fade-3">
+      <rect x="56" y="200" width="112" height="30" rx="15" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.16"/>
+      <text class="mono pill" x="78" y="219">QUANTV</text>
+    </g>
+    <g class="fade-4">
+      <rect x="180" y="200" width="94" height="30" rx="15" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.16"/>
+      <text class="mono pill" x="205" y="219">NVE</text>
+    </g>
+    <g class="fade-5">
+      <rect x="286" y="200" width="130" height="30" rx="15" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.16"/>
+      <text class="mono pill" x="308" y="219">RESHADE</text>
+    </g>
+
+    <rect x="0" y="257" width="1000" height="3" fill="url(#rule)" opacity="0.7"/>
+  </g>
+  <rect x="1" y="1" width="998" height="258" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.14"/>
+</svg>

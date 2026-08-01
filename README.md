@@ -1,25 +1,57 @@
-# FiveM Pack Manager
+<div align="center">
 
-<img width="970" height="714" alt="FiveM Pack Manager" src="https://github.com/user-attachments/assets/d551e536-6a45-416a-bb89-2f08a2e3f136" />
+<img src=".github/assets/banner.svg" alt="FiveM Pack Manager" width="100%">
 
-Installe et désinstalle des **packs graphiques FiveM** en un clic — QuantV, NVE,
-ReShade, ENB, mods, plugins. Plus besoin de glisser les fichiers à la main dans
-cinq dossiers différents en croisant les doigts.
+<br>
 
-L'app télécharge le pack, détecte toute seule comment il est rangé, envoie chaque
-partie au bon endroit, et **sauvegarde ce qu'elle écrase**. Un bouton pour
-désinstaller, et le jeu revient exactement comme avant.
+![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0a0a0a?style=for-the-badge&logo=windows11&logoColor=white&labelColor=000000)
+![Python](https://img.shields.io/badge/Python-3.10+-0a0a0a?style=for-the-badge&logo=python&logoColor=white&labelColor=000000)
+![Standalone](https://img.shields.io/badge/exe-100%25%20autonome-0a0a0a?style=for-the-badge&labelColor=000000)
+![Setup](https://img.shields.io/badge/configuration-aucune-0a0a0a?style=for-the-badge&labelColor=000000)
 
----
+**Installe et désinstalle tes packs graphiques FiveM en un clic.**
+QuantV · NVE · ReShade · ENB · mods · plugins
+
+<br>
+
+<img src="https://github.com/user-attachments/assets/d551e536-6a45-416a-bb89-2f08a2e3f136" alt="Interface de FiveM Pack Manager" width="880">
+
+</div>
+
+<img src=".github/assets/divider.svg" alt="" width="100%">
+
+## Le problème
+
+Installer un pack graphique à la main, c'est ouvrir l'archive, deviner où va
+chaque dossier, en copier une partie dans `FiveM.app`, l'autre dans le dossier
+de GTA V, écraser des fichiers sans savoir lesquels — et prier pour pouvoir
+revenir en arrière.
+
+**Cette app fait tout ça pour toi, et sait défaire ce qu'elle a fait.**
+
+<img src=".github/assets/divider.svg" alt="" width="100%">
 
 ## Installation
 
-**Le plus simple** — télécharge `FiveMPackManager.exe` depuis les
-[Releases](../../releases) et double-clique. Rien à installer, rien à configurer,
-les packs apparaissent tout seuls.
+<table>
+<tr>
+<td width="50%" valign="top">
 
-**Depuis le source** — nécessite [Python 3.10+](https://www.python.org/downloads/)
-avec *Add Python to PATH* coché :
+### ⚡ Prêt à l'emploi
+
+Télécharge `FiveMPackManager.exe` depuis les [**Releases**](../../releases)
+et double-clique.
+
+Aucune installation, aucune configuration, aucune dépendance.
+Les packs apparaissent tout seuls au lancement.
+
+</td>
+<td width="50%" valign="top">
+
+### 🛠 Depuis le source
+
+Nécessite [Python 3.10+](https://www.python.org/downloads/)
+avec *Add Python to PATH* coché.
 
 ```bash
 git clone https://github.com/ImSerial/fivem-pack-manager
@@ -27,21 +59,23 @@ cd fivem-pack-manager
 Lancer.bat
 ```
 
-`Lancer.bat` installe les dépendances au premier lancement, puis ouvre l'app.
+</td>
+</tr>
+</table>
 
----
+<img src=".github/assets/divider.svg" alt="" width="100%">
 
 ## Utilisation
 
-| Bouton | Ce qu'il fait |
-|---|---|
-| **Charger** | Télécharge le pack si besoin, l'extrait, l'installe. Sauvegarde tout fichier écrasé. |
-| **Décharger** | Retire exactement ce qui a été installé, restaure les originaux, nettoie les dossiers vides. |
-| **Preview** | Ouvre la vidéo de présentation du pack, quand il y en a une. |
-| **annuler le téléchargement** | Stoppe un téléchargement en cours et nettoie derrière lui. |
+| | Bouton | Ce qu'il fait |
+|:--:|---|---|
+| ⬇ | **Charger** | Télécharge le pack si besoin, l'extrait, l'installe. Sauvegarde tout fichier écrasé. |
+| ↩ | **Décharger** | Retire exactement ce qui a été installé, restaure les originaux, nettoie les dossiers vides. |
+| ▶ | **Preview** | Ouvre la vidéo de présentation du pack, quand il y en a une. |
+| ✕ | **Annuler** | Stoppe un téléchargement en cours et nettoie derrière lui. |
 
-La console en bas décrit chaque action en direct. La taille du pack est affichée
-sur sa carte **avant** de le télécharger.
+La console en bas décrit chaque action en direct. La **taille du pack** est
+affichée sur sa carte avant même de le télécharger.
 
 > [!IMPORTANT]
 > Ferme FiveM et GTA V avant de charger ou décharger. L'app refuse de continuer
@@ -51,12 +85,34 @@ sur sa carte **avant** de le télécharger.
 > Les packs en `.rar` demandent **WinRAR ou 7-Zip** installé sur le PC.
 > Les `.zip` fonctionnent partout.
 
----
+<img src=".github/assets/divider.svg" alt="" width="100%">
 
-## Où vont les fichiers
+## Ce qui se passe quand tu cliques sur Charger
 
-Chaque créateur range son pack à sa façon. L'app parcourt tout l'arbre et
-répartit selon ce qu'elle trouve, quel que soit le niveau où c'est rangé :
+```mermaid
+flowchart LR
+    A["🖱️ Charger"] --> B{"En cache ?"}
+    B -- non --> C["⬇ Téléchargement<br/>Drive · Mega · Gofile · direct"]
+    B -- oui --> E
+    C --> D["📦 Extraction<br/>zip · rar · 7z · multi-volumes"]
+    D --> E["🔍 Analyse de l'arbre"]
+    E --> F["📁 FiveM.app<br/>citizen · mods · plugins"]
+    E --> G["🎮 Dossier GTA V<br/>ENB · d3d11.dll · .asi"]
+    E --> H["🗂️ mods/<br/>fichiers .rpf"]
+    F --> I["💾 Sauvegarde des<br/>fichiers écrasés"]
+    G --> I
+    H --> I
+    I --> J["✅ Installé"]
+    I -. échec .-> K["⛔ Rollback complet"]
+```
+
+Chaque créateur range son pack à sa façon. L'app parcourt **tout** l'arbre et
+répartit selon ce qu'elle trouve, quel que soit le niveau où c'est rangé.
+
+<details>
+<summary><b>Le détail du routage</b></summary>
+
+<br>
 
 | Dans le pack | Destination |
 |---|---|
@@ -65,52 +121,92 @@ répartit selon ce qu'elle trouve, quel que soit le niveau où c'est rangé :
 | fichiers `.rpf` | toujours `mods/`, au même sous-chemin que l'original |
 | readme, screenshots, dossiers parasites | ignorés |
 
-Cas particuliers gérés : pack ENB « nu » sans dossier wrapper, `.asi` isolé avec
-son `.ini`, archives multi-volumes (`.part1.rar`, `.r00`, `.7z.001`), archives
-imbriquées, dossiers en majuscules d'une vieille install manuelle.
+Cas particuliers gérés :
+
+- pack ENB « nu », sans dossier wrapper `GTA5`
+- `.asi` isolé, installé dans `plugins/` avec son `.ini` de config
+- archives multi-volumes : `.part1.rar`, `.r00`/`.r01`, `.7z.001`
+- archives imbriquées (`FIVEM.rar` + `GTA5.rar` dans le téléchargement)
+- dossiers en majuscules laissés par une vieille install manuelle
+- noms de dossiers exotiques : `GTA V Legacy`, `SinglePlayer`, `FIVEM FILES`…
 
 Les deux dossiers de jeu sont détectés automatiquement (registre, `CitizenFX.ini`,
-chemins connus dont les variantes *Legacy*). Réglables à la main dans **Options →
-Avancé** si la détection se trompe.
+chemins connus dont les variantes *Legacy*). Réglables à la main dans
+**Options → Avancé** si la détection se trompe.
 
----
+</details>
+
+<img src=".github/assets/divider.svg" alt="" width="100%">
 
 ## Sécurités
 
-- Refuse de travailler si FiveM ou GTA V tourne
-- Vérifie l'espace disque avant de télécharger
-- **Rollback automatique** si l'installation échoue en cours de route
-- Interdit toute écriture en dehors des dossiers cibles
-- Garde anti double-chargement du même pack
-- Un dossier remplacé en entier (`enbseries`, `reshade-shaders`…) est mis de côté
-  complet, jamais mélangé avec l'ancien. `citizen`, `update`, `x64`, `dlcpacks`
-  ne sont jamais purgés : fusion classique, avec sauvegarde fichier par fichier.
+<table>
+<tr>
+<td width="33%" valign="top">
 
----
+**🔒 Avant**
+
+Refuse de travailler si FiveM ou GTA V tourne. Vérifie l'espace disque. Garde
+anti double-chargement.
+
+</td>
+<td width="33%" valign="top">
+
+**⚙️ Pendant**
+
+Interdit toute écriture hors des dossiers cibles. **Rollback automatique** si
+l'installation échoue en cours de route.
+
+</td>
+<td width="33%" valign="top">
+
+**↩️ Après**
+
+Le déchargement retire exactement ce qui a été posé et restaure les originaux.
+Le jeu revient propre.
+
+</td>
+</tr>
+</table>
+
+Un dossier remplacé en entier (`enbseries`, `reshade-shaders`…) est mis de côté
+complet, jamais mélangé avec l'ancien. `citizen`, `update`, `x64`, `dlcpacks` ne
+sont jamais purgés : fusion classique, avec sauvegarde fichier par fichier.
+
+<img src=".github/assets/divider.svg" alt="" width="100%">
 
 ## Ajouter tes propres packs
 
-**Options → Mes packs**, colle un lien. Formats acceptés :
+**Options → Mes packs**, colle un lien.
 
-- **Google Drive** — fichier ou dossier entier (l'arbre est reconstruit et
-  téléchargé fichier par fichier)
-- **Mega.nz** — déchiffrement AES côté client
-- **Gofile**
-- n'importe quel **lien direct** `.rar` / `.zip` / `.7z`
+<table>
+<tr>
+<td align="center" width="25%"><b>Google Drive</b><br><sub>fichier ou dossier entier</sub></td>
+<td align="center" width="25%"><b>Mega.nz</b><br><sub>déchiffrement AES client</sub></td>
+<td align="center" width="25%"><b>Gofile</b><br><sub>résolution via API</sub></td>
+<td align="center" width="25%"><b>Lien direct</b><br><sub>.rar · .zip · .7z</sub></td>
+</tr>
+</table>
 
-Un champ image et un champ preview YouTube sont disponibles, tous deux optionnels.
-Le bouton **Modifier** repréremplit le formulaire ; la croix retire le pack **et**
-efface ses fichiers téléchargés, après confirmation.
+Pour un **dossier** Google Drive, l'arbre est reconstruit et téléchargé fichier
+par fichier ; les archives qu'il contient sont extraites automatiquement.
 
----
+Champs image et preview YouTube optionnels. **Modifier** repréremplit le
+formulaire ; la croix retire le pack **et** ses fichiers téléchargés, après
+confirmation.
 
-## Héberger ta propre liste de packs
+<img src=".github/assets/divider.svg" alt="" width="100%">
+
+## Héberger ta propre liste
 
 L'app pointe par défaut sur une liste publique. Pour servir la tienne, indique
 l'URL de ton `packs.json` dans **Options → Avancé**, ou builde un exe avec ton
-propre `embedded_config.json` (voir plus bas).
+propre `embedded_config.json`.
 
-### Format du `packs.json`
+<details>
+<summary><b>Format du <code>packs.json</code></b></summary>
+
+<br>
 
 ```json
 {
@@ -138,7 +234,12 @@ propre `embedded_config.json` (voir plus bas).
 | `image` | lien externe, ou fichier à côté du `packs.json` |
 | `preview` | lien vidéo, affiche un bouton Preview |
 
-### Config nginx
+</details>
+
+<details>
+<summary><b>Config nginx</b></summary>
+
+<br>
 
 ```nginx
 location /mon-dossier-packs/ {
@@ -153,9 +254,12 @@ location /mon-dossier-packs/ {
 }
 ```
 
----
+</details>
 
-## Builder l'exe
+<details>
+<summary><b>Builder l'exe</b></summary>
+
+<br>
 
 ```bash
 python -m pip install -r requirements.txt
@@ -176,9 +280,14 @@ script et ajoute `--add-data "embedded_config.json;."` à la commande :
 ```
 
 Priorité de configuration, du plus faible au plus fort :
-**valeurs du code** → `embedded_config.json` → `config.json` (données de l'app).
 
----
+```
+valeurs du code  →  embedded_config.json  →  config.json
+```
+
+</details>
+
+<img src=".github/assets/divider.svg" alt="" width="100%">
 
 ## Dépannage
 
@@ -190,9 +299,22 @@ Priorité de configuration, du plus faible au plus fort :
 | Le pack se télécharge mais n'installe rien | archive rangée d'une façon inconnue — la console détaille ce qui a été trouvé |
 | Vignette pas à jour | l'image est mise en cache au premier téléchargement du pack |
 
----
+<img src=".github/assets/divider.svg" alt="" width="100%">
 
-## Structure du projet
+## Sous le capot
+
+<details>
+<summary><b>Architecture</b></summary>
+
+<br>
+
+L'interface est du HTML/CSS/JS servi par un petit serveur HTTP local
+(`127.0.0.1`, protégé par jeton), affiché dans une fenêtre
+[pywebview](https://pywebview.flowrl.com/). Ce choix contourne un blocage du
+pont natif pywebview une fois l'application compilée en exe.
+
+Extraction : `zipfile` natif, puis UnRAR → WinRAR → 7-Zip → tar, chaque outil
+installé étant essayé jusqu'au premier qui réussit.
 
 | Fichier | Rôle |
 |---|---|
@@ -204,12 +326,10 @@ Les données de travail (cache des packs, sauvegardes, réglages, image de fond)
 vivent dans `%LOCALAPPDATA%\FiveMPackManager\` pour l'exe, et à côté du script
 en mode développement.
 
-### Comment c'est fait
+</details>
 
-L'interface est du HTML/CSS/JS servi par un petit serveur HTTP local
-(`127.0.0.1`, protégé par jeton), affiché dans une fenêtre
-[pywebview](https://pywebview.flowrl.com/). Ce choix contourne un blocage du pont
-natif pywebview une fois l'application compilée en exe.
+<br>
 
-Extraction : `zipfile` natif, puis UnRAR → WinRAR → 7-Zip → tar, chaque outil
-installé étant essayé jusqu'au premier qui réussit.
+<div align="center">
+<sub>Fait pour la commu FiveM · <a href="https://uxqt.site">uxqt.site</a></sub>
+</div>
