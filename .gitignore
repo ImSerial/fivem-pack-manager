@@ -3,9 +3,12 @@ admin-vps.json
 embedded_config.json
 config.json
 packs.reel.json
-# les sauvegardes de ces fichiers contiennent les mêmes secrets
+# les copies de securite de ces fichiers contiennent les memes secrets
 *.bak
 *.bak-*
+*.avant-*
+*.orig
+*.tmp
 
 # Source claire — seul pack_manager.py (obfusqué) part sur GitHub
 pack_manager.source.py
