@@ -81,7 +81,7 @@ import base64 as At,json as K,os as A,re as I,secrets as Au,shutil as J,struct a
 from http.server import BaseHTTPRequestHandler as BZ,ThreadingHTTPServer as Ba
 import webview as Aw
 Bb=BO
-A7='3.0.0'
+A7='3.0.1'
 r=f"Modium/{A7}"
 Ax='ImSerial/modium'
 Bc='FiveMPackManager'

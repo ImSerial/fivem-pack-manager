@@ -1,95 +1,137 @@
-# Genere une identite Modium PROVISOIRE, dans le langage graphique existant :
-# tuile noire arrondie, monogramme blanc, les trois carres en bas, halo.
-# Produit : app.ico (7 tailles) + .github/assets/banner.png
+# Reconstruit l'identite Modium a partir du logo fourni.
 #
-# A remplacer par le vrai logo quand il sera pret : depose-le et lance
-#   python faire_icone.py mon_logo.png
-# Usage : python faire_branding.py
+# Le logo d'origine est une banniere d'agence : la tuile et le mot-symbole sont
+# bons, mais le texte parle de "Next-gen Digital Solutions", "Web Apps",
+# "Automation"... rien a voir avec un installeur de packs FiveM.
+# On garde donc les deux elements graphiques tels quels, decoupes au pixel, et
+# on repeint entierement le texte autour.
+#
+# Produit : app.ico (7 tailles) + .github/assets/banner.png + site/assets/*
+# Usage   : python faire_branding.py
 import os
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+SRC = os.path.join(HERE, "logo modium.png")
+
+# Zones relevees au pixel sur le fichier source (1672x941)
+TUILE = (330, 174, 634, 478)
+MOT = (690, 225, 1410, 410)
+
 FONTS = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "Fonts")
-MONO = os.path.join(FONTS, "consolab.ttf")      # Consolas Bold
-SANS = os.path.join(FONTS, "bahnschrift.ttf")   # condensee, proche du logo
+SANS = os.path.join(FONTS, "segoeuib.ttf")      # Segoe UI Bold
+SANS_SB = os.path.join(FONTS, "seguisb.ttf")    # Segoe UI Semibold
 
-NOIR, BLANC, GRIS = (10, 10, 12), (255, 255, 255), (138, 138, 142)
+NOIR = (6, 6, 7)
+BLANC = (255, 255, 255)
+GRIS = (150, 150, 156)
+ROUGE = (216, 26, 26)       # releve sur le point du i et l'eclat du M
+
+TAILLES_ICO = (16, 24, 32, 48, 64, 128, 256)
 
 
-def tuile(n: int) -> Image.Image:
-    """La tuile de l'app : carre noir arrondi, M blanc, trois carres en bas."""
-    S = n * 4  # on dessine 4x plus grand puis on reduit : bords propres
-    im = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+def tuile() -> Image.Image:
+    return Image.open(SRC).convert("RGBA").crop(TUILE)
+
+
+def icone(n: int) -> Image.Image:
+    """Tuile redimensionnee, coins rendus transparents. Sans ca les coins
+    gardent le fond de la banniere et l'icone montre un carre gris sur un
+    theme clair."""
+    big = n * 4
+    src = tuile().resize((big, big), Image.LANCZOS)
+    masque = Image.new("L", (big, big), 0)
+    ImageDraw.Draw(masque).rounded_rectangle(
+        (0, 0, big - 1, big - 1), radius=int(big * 0.225), fill=255)
+    src.putalpha(masque)
+    return src.resize((n, n), Image.LANCZOS)
+
+
+def banniere(largeur=1400) -> Image.Image:
+    W, H = largeur, 620
+    im = Image.new("RGB", (W, H), NOIR)
     d = ImageDraw.Draw(im)
-    d.rounded_rectangle((0, 0, S - 1, S - 1), radius=int(S * 0.22), fill=NOIR)
-    # lisere clair : c'est lui qui donne le relief du logo d'origine
-    d.rounded_rectangle((0, 0, S - 1, S - 1), radius=int(S * 0.22),
-                        outline=(70, 70, 74), width=max(1, S // 90))
 
-    f = ImageFont.truetype(MONO, int(S * 0.52))
-    box = d.textbbox((0, 0), "M", font=f)
-    d.text(((S - (box[2] - box[0])) / 2 - box[0],
-            S * 0.40 - (box[3] - box[1]) / 2 - box[1]), "M", font=f, fill=BLANC)
+    pas = 46
+    for x in range(0, W, pas):
+        d.line([(x, 0), (x, H)], fill=(14, 14, 16))
+    for y in range(0, H, pas):
+        d.line([(0, y), (W, y)], fill=(14, 14, 16))
 
-    # les trois carres, du plein au sombre, comme sur la banniere d'origine
-    c, gap = S * 0.085, S * 0.045
-    x0 = (S - (3 * c + 2 * gap)) / 2
-    y0 = S * 0.70
-    for i, col in enumerate((BLANC, (110, 110, 114), (70, 70, 74))):
-        x = x0 + i * (c + gap)
-        d.rounded_rectangle((x, y0, x + c, y0 + c), radius=c * 0.18, fill=col)
-    return im.resize((n, n), Image.LANCZOS)
-
-
-def banniere() -> Image.Image:
-    W, H = 1200, 500
-    im = Image.new("RGB", (W, H), (0, 0, 0))
-    d = ImageDraw.Draw(im)
-    for x in range(0, W, 34):      # grille tres discrete du fond d'origine
-        d.line([(x, 0), (x, H)], fill=(16, 16, 18))
-    for y in range(0, H, 34):
-        d.line([(0, y), (W, y)], fill=(16, 16, 18))
-
-    t = tuile(230)
-    tx, ty = 120, (H - 230) // 2 - 30
+    # halo : blanc froid autour de la tuile, avec une pointe de rouge
     halo = Image.new("RGB", (W, H), (0, 0, 0))
-    ImageDraw.Draw(halo).ellipse((tx - 90, ty - 90, tx + 320, ty + 320),
-                                 fill=(48, 48, 52))
-    im = Image.blend(im, halo.filter(ImageFilter.GaussianBlur(70)), 0.55)
-    im.paste(t, (tx, ty), t)
+    hd = ImageDraw.Draw(halo)
+    hd.ellipse((70, 20, 560, 480), fill=(46, 46, 50))
+    hd.ellipse((190, 150, 430, 350), fill=(70, 30, 32))
+    im = Image.blend(im, halo.filter(ImageFilter.GaussianBlur(85)), 0.6)
     d = ImageDraw.Draw(im)
 
-    d.text((tx + 300, ty + 30), "Modium",
-           font=ImageFont.truetype(SANS, 110), fill=BLANC)
-    d.text((tx + 306, ty + 160), "P A C K   M A N A G E R",
-           font=ImageFont.truetype(MONO, 34), fill=(215, 215, 220))
+    # tuile : coins rendus transparents, sinon on voit le rectangle de decoupe
+    t = icone(250)
+    tx, ty = 120, 96
+    im.paste(t, (tx, ty), t)
 
-    f = ImageFont.truetype(MONO, 22)
-    x = tx
-    for mot in ("RAPIDE", "SIMPLE", "SÉCURISÉ", "OPEN SOURCE"):
-        w = d.textbbox((0, 0), mot, font=f)[2] + 74
-        y = ty + 285
-        d.rounded_rectangle((x, y, x + w, y + 52), radius=26,
-                            fill=(18, 18, 20), outline=(60, 60, 64))
-        d.ellipse((x + 26, y + 21, x + 36, y + 31), fill=BLANC)
-        d.text((x + 50, y + 14), mot, font=f, fill=(205, 205, 210))
-        x += w + 18
+    # mot-symbole : detoure par un masque bati sur le canal MAXIMUM, pas sur la
+    # luminance. Le point du i est rouge pur (216,26,26) : sa luminance est
+    # faible et un masque luminance le rendrait a moitie transparent, alors que
+    # son canal rouge vaut 216. Le fond quasi noir tombe a zero, le rectangle
+    # de decoupe disparait.
+    mot = Image.open(SRC).convert("RGB").crop(MOT)
+    mw = 560
+    mot = mot.resize((mw, round(mot.height * mw / mot.width)), Image.LANCZOS)
+    r, v, bl = mot.split()
+    canal_max = ImageChops.lighter(ImageChops.lighter(r, v), bl)
+    masque = canal_max.point(lambda p: 0 if p < 16 else min(255, int((p - 16) * 2.2)))
+    im.paste(mot, (tx + 300, ty + 34), masque)
+    mx, my = tx + 300, ty + 34
+
+    d.text((mx + 6, my + mot.height + 6),
+           "Packs graphiques FiveM, installés en un clic",
+           font=ImageFont.truetype(SANS_SB, 27), fill=GRIS)
+
+    # pastilles : ce que fait vraiment l'app
+    f = ImageFont.truetype(SANS_SB, 22)
+    x, y = tx, ty + 292
+    for mot_p in ("UN CLIC", "RÉVERSIBLE", "OPEN SOURCE", "GRATUIT"):
+        w = d.textbbox((0, 0), mot_p, font=f)[2] + 76
+        d.rounded_rectangle((x, y, x + w, y + 56), radius=28,
+                            fill=(16, 16, 18), outline=(54, 54, 58))
+        d.ellipse((x + 27, y + 23, x + 38, y + 34), fill=ROUGE)
+        d.text((x + 52, y + 15), mot_p, font=f, fill=(226, 226, 231))
+        x += w + 20
+
+    # barre d'appel
+    bx, by, bw, bh = tx + 92, y + 96, 760, 84
+    d.rounded_rectangle((bx, by, bx + bw, by + bh), radius=20,
+                        fill=(15, 15, 17), outline=(52, 52, 56))
+    fb = ImageFont.truetype(SANS, 30)
+    txt = "GÈRE TES PACKS COMME UN PRO"
+    tw = d.textbbox((0, 0), txt, font=fb)[2]
+    d.text((bx + (bw - tw) / 2 - 16, by + 24), txt, font=fb, fill=BLANC)
+    d.text((bx + (bw + tw) / 2 + 8, by + 22), "›",
+           font=ImageFont.truetype(SANS, 36), fill=ROUGE)
     return im
 
 
 ico = os.path.join(HERE, "app.ico")
-tailles = (16, 24, 32, 48, 64, 128, 256)
-frames = [tuile(s) for s in tailles]
-frames[-1].save(ico, format="ICO", sizes=[(s, s) for s in tailles],
+frames = [icone(s) for s in TAILLES_ICO]
+frames[-1].save(ico, format="ICO", sizes=[(s, s) for s in TAILLES_ICO],
                 append_images=frames[:-1])
-print(f"app.ico       {os.path.getsize(ico):>7} o  ({len(tailles)} tailles)")
+print(f"app.ico          {os.path.getsize(ico):>8} o  ({len(TAILLES_ICO)} tailles)")
 
-os.makedirs(os.path.join(HERE, ".github", "assets"), exist_ok=True)
-b = os.path.join(HERE, ".github", "assets", "banner.png")
-banniere().save(b, optimize=True)
-print(f"banner.png    {os.path.getsize(b):>7} o")
+b = banniere()
+for chemin in (os.path.join(HERE, ".github", "assets", "banner.png"),
+               os.path.join(HERE, "site", "assets", "banner.png")):
+    os.makedirs(os.path.dirname(chemin), exist_ok=True)
+    b.save(chemin, optimize=True)
+    print(f"{os.path.relpath(chemin, HERE):<32} {os.path.getsize(chemin):>8} o")
 
-p = os.path.join(HERE, "app_icon_preview.png")
-tuile(256).save(p)
-print("apercu       ", os.path.basename(p))
+for chemin in (os.path.join(HERE, "app_icon_preview.png"),
+               os.path.join(HERE, ".github", "assets", "icon.png"),
+               os.path.join(HERE, "site", "assets", "icon.png")):
+    os.makedirs(os.path.dirname(chemin), exist_ok=True)
+    icone(256).save(chemin)
+import shutil
+shutil.copy(ico, os.path.join(HERE, "site", "assets", "favicon.ico"))
+print("icones et favicon ecrits")

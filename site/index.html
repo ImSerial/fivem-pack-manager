@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modium — installe tes packs graphiques FiveM en un clic</title>
+<meta name="description" content="Modium installe et désinstalle les packs graphiques FiveM — QuantV, NVE, ReShade, ENB — en un clic, et sait défaire ce qu'il a fait. Gratuit et open source.">
+<link rel="icon" href="assets/favicon.ico">
+<meta property="og:title" content="Modium — installe tes packs graphiques FiveM en un clic">
+<meta property="og:description" content="Un clic pour installer, un clic pour tout remettre comme avant. Gratuit, open source.">
+<meta property="og:image" content="https://modium.xyz/assets/banner.png">
+<meta property="og:url" content="https://modium.xyz/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --bg:#0b0b0d; --bg-2:#121216; --panel:#151519; --panel-2:#1b1b20;
+    --hair:rgba(255,255,255,.09); --hair-2:rgba(255,255,255,.05);
+    --text:#ececef; --dim:#a2a2ab; --faint:#6d6d78;
+    --accent:#ffffff;
+    /* rouge du logo, relevé sur le point du i et l'éclat du M */
+    --red:#d81a1a; --red-hi:#ff3b3b;
+    --red-glow:rgba(216,26,26,.55); --red-soft:rgba(216,26,26,.16);
+    --ok:#ececef; --danger:var(--red);
+    --mono:'Cascadia Mono',Consolas,ui-monospace,'Courier New',monospace;
+    --font:'Segoe UI Variable Display','Segoe UI',system-ui,-apple-system,sans-serif;
+    --r-sm:10px; --r:16px; --r-lg:22px;
+    --shadow:0 24px 60px -20px rgba(0,0,0,.8);
+    --maxw:1140px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--text); font-family:var(--font);
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* trame de fond, très discrète, comme dans l'app */
+  body::before{
+    content:''; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background-image:linear-gradient(var(--hair-2) 1px,transparent 1px),
+                     linear-gradient(90deg,var(--hair-2) 1px,transparent 1px);
+    background-size:44px 44px; opacity:.5;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 40%,transparent 100%);
+  }
+  /* halo de tête : blanc froid, avec un cœur rouge très dilué */
+  body::after{
+    content:''; position:fixed; top:-30vh; left:50%; transform:translateX(-50%);
+    width:110vw; height:80vh; z-index:-1; pointer-events:none;
+    background:
+      radial-gradient(ellipse 40% 45% at 50% 55%,var(--red-soft),transparent 70%),
+      radial-gradient(ellipse at center,rgba(255,255,255,.07),transparent 62%);
+  }
+  a{color:inherit; text-decoration:none}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 26px}
+  .mono{font-family:var(--mono); letter-spacing:.22em; text-transform:uppercase;
+        font-size:11px; color:var(--faint)}
+  .head .mono, .hero .mono{display:inline-flex; align-items:center; gap:9px}
+  .head .mono::before, .hero .mono::before{
+    content:''; width:5px; height:5px; border-radius:50%; background:var(--red);
+    box-shadow:0 0 10px var(--red-glow), 0 0 20px var(--red-glow);
+  }
+
+  /* ---------- barre du haut ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,11,13,.78); backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--hair-2);
+  }
+  header .wrap{display:flex; align-items:center; gap:30px; height:66px}
+  .brand{display:flex; align-items:center; gap:11px; font-weight:650;
+         letter-spacing:.02em; font-size:16px}
+  .brand img{width:29px; height:29px; border-radius:8px}
+  nav{display:flex; gap:28px; margin-left:auto}
+  nav a{font-size:14px; color:var(--dim); transition:color .2s}
+  nav a:hover{color:var(--text)}
+  .btn{
+    display:inline-flex; align-items:center; gap:9px; justify-content:center;
+    border-radius:999px; font-family:var(--mono); font-size:11px;
+    letter-spacing:.18em; text-transform:uppercase; padding:0 20px; height:38px;
+    border:1px solid var(--hair); background:rgba(255,255,255,.04);
+    color:var(--text); cursor:pointer; white-space:nowrap;
+    transition:border-color .22s, transform .22s, background .22s;
+  }
+  .btn:hover{border-color:var(--red); transform:translateY(-1px);
+             box-shadow:0 0 0 1px var(--red-soft), 0 0 22px -4px var(--red-glow)}
+  .btn.primary{background:var(--accent); color:#000; border-color:var(--accent);
+               font-weight:700}
+  .btn.primary:hover{
+    border-color:var(--accent);
+    box-shadow:0 0 26px rgba(255,255,255,.3), 0 0 46px -8px var(--red-glow);
+  }
+  .btn.lg{height:50px; padding:0 30px; font-size:12px}
+  @media(max-width:860px){nav{display:none}}
+
+  /* ---------- héro ---------- */
+  .hero{padding:98px 0 74px; text-align:center}
+  .hero h1{
+    font-size:clamp(38px,6.2vw,66px); line-height:1.06; font-weight:700;
+    letter-spacing:-.025em; margin:20px auto 20px; max-width:15ch;
+  }
+  .hero h1 em{
+    font-style:normal;
+    background:linear-gradient(100deg,#fff 30%,#8f8f99 78%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p.lead{font-size:18px; color:var(--dim); max-width:57ch; margin:0 auto 34px}
+  .cta{display:flex; gap:13px; justify-content:center; flex-wrap:wrap}
+  .under{margin-top:18px; font-family:var(--mono); font-size:11px;
+         letter-spacing:.14em; color:var(--faint)}
+  .chips{display:flex; gap:9px; justify-content:center; flex-wrap:wrap; margin-top:34px}
+  .chip{
+    display:inline-flex; align-items:center; gap:9px; padding:7px 16px;
+    border:1px solid var(--hair); border-radius:999px; background:rgba(255,255,255,.03);
+    font-family:var(--mono); font-size:10px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--dim);
+  }
+  .chip i{width:6px; height:6px; border-radius:50%; background:var(--red); display:block;
+          box-shadow:0 0 8px var(--red-glow), 0 0 16px var(--red-glow)}
+  .chip{transition:border-color .25s, box-shadow .25s}
+  .chip:hover{border-color:var(--red); box-shadow:0 0 20px -6px var(--red-glow)}
+
+  /* ---------- capture ---------- */
+  .shot{margin:64px auto 0; max-width:1000px; padding:0 26px}
+  .shot{position:relative}
+  .shot::before{
+    content:''; position:absolute; inset:auto 12% -34px; height:120px; z-index:-1;
+    background:radial-gradient(ellipse at center,var(--red-glow),transparent 70%);
+    filter:blur(38px); opacity:.5;
+  }
+  .shot-frame{
+    border:1px solid var(--hair); border-radius:var(--r-lg); overflow:hidden;
+    box-shadow:var(--shadow); background:var(--panel);
+    transition:border-color .35s, box-shadow .35s;
+  }
+  .shot-frame:hover{border-color:rgba(216,26,26,.45);
+                    box-shadow:var(--shadow), 0 0 60px -18px var(--red-glow)}
+  .shot-frame img{display:block; width:100%}
+
+  /* ---------- sections ---------- */
+  section{padding:104px 0}
+  .head{max-width:64ch; margin-bottom:52px}
+  .head.mid{margin-left:auto; margin-right:auto; text-align:center}
+  .head h2{font-size:clamp(28px,3.6vw,40px); line-height:1.15; font-weight:700;
+           letter-spacing:-.02em; margin:14px 0 14px}
+  .head p{color:var(--dim); font-size:16px}
+
+  .grid{display:grid; gap:18px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:900px){.g3,.g2{grid-template-columns:1fr}}
+
+  .card{
+    border:1px solid var(--hair); border-radius:var(--r); padding:28px;
+    background:linear-gradient(180deg,var(--panel),var(--bg-2));
+    transition:border-color .25s, transform .25s;
+  }
+  .card{position:relative; overflow:hidden}
+  .card::after{
+    content:''; position:absolute; inset:-1px; border-radius:inherit; opacity:0;
+    pointer-events:none; transition:opacity .3s;
+    background:radial-gradient(420px circle at 50% 0%,var(--red-soft),transparent 70%);
+  }
+  .card:hover{border-color:rgba(216,26,26,.42); transform:translateY(-2px);
+              box-shadow:0 0 34px -14px var(--red-glow)}
+  .card:hover::after{opacity:1}
+  .card h3{font-size:17px; font-weight:650; margin:14px 0 9px; letter-spacing:-.01em}
+  .card p{color:var(--dim); font-size:14.5px}
+  .ic{
+    width:38px; height:38px; border-radius:11px; display:grid; place-items:center;
+    border:1px solid var(--hair); background:rgba(255,255,255,.04); font-size:17px;
+    transition:border-color .3s, box-shadow .3s;
+  }
+  .card:hover .ic{border-color:rgba(216,26,26,.5);
+                  box-shadow:0 0 18px -5px var(--red-glow)}
+
+  /* ---------- étapes ---------- */
+  .steps{display:grid; gap:0; border:1px solid var(--hair); border-radius:var(--r);
+         overflow:hidden; background:var(--panel)}
+  .step{display:grid; grid-template-columns:78px 1fr; gap:22px; padding:26px 28px;
+        border-bottom:1px solid var(--hair-2); align-items:start}
+  .step:last-child{border-bottom:0}
+  .step{transition:background .3s}
+  .step:hover{background:rgba(216,26,26,.045)}
+  .step .n{font-family:var(--mono); font-size:26px; color:rgba(216,26,26,.55);
+           font-weight:700; letter-spacing:0; transition:color .3s, text-shadow .3s}
+  .step:hover .n{color:var(--red); text-shadow:0 0 18px var(--red-glow)}
+  .step h3{font-size:16.5px; font-weight:650; margin-bottom:6px}
+  .step p{color:var(--dim); font-size:14.5px}
+  @media(max-width:620px){.step{grid-template-columns:52px 1fr; gap:14px; padding:22px}}
+
+  /* ---------- comparatif ---------- */
+  .cmp{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+  @media(max-width:900px){.cmp{grid-template-columns:1fr}}
+  .cmp .card{padding:0; overflow:hidden}
+  .cmp .t{padding:20px 26px; border-bottom:1px solid var(--hair-2);
+          font-family:var(--mono); font-size:11px; letter-spacing:.2em;
+          text-transform:uppercase; color:var(--faint)}
+  .cmp ul{list-style:none; padding:10px 26px 26px}
+  .cmp li{display:flex; gap:13px; padding:11px 0; font-size:14.5px; color:var(--dim);
+          border-bottom:1px solid var(--hair-2)}
+  .cmp li:last-child{border-bottom:0}
+  .cmp li s{color:var(--faint); text-decoration:none}
+  .mark{flex-shrink:0; width:19px; height:19px; border-radius:50%; display:grid;
+        place-items:center; font-size:11px; margin-top:2px}
+  .no{background:rgba(216,26,26,.16); color:var(--red-hi);
+      box-shadow:0 0 12px -2px var(--red-glow)}
+  .yes{background:rgba(255,255,255,.1); color:var(--text)}
+
+  /* ---------- fiche technique ---------- */
+  .specs{display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+         background:var(--hair-2); border:1px solid var(--hair);
+         border-radius:var(--r); overflow:hidden}
+  @media(max-width:900px){.specs{grid-template-columns:repeat(2,1fr)}}
+  .spec{background:var(--bg-2); padding:26px 22px}
+  .spec .k{font-family:var(--mono); font-size:10px; letter-spacing:.2em;
+           text-transform:uppercase; color:var(--faint); margin-bottom:9px}
+  .spec{transition:background .3s}
+  .spec:hover{background:var(--panel-2)}
+  .spec .v{font-size:15px; font-weight:600}
+  .spec:hover .k{color:var(--red); text-shadow:0 0 14px var(--red-glow)}
+  .spec .s{font-size:13px; color:var(--dim); margin-top:4px}
+
+  /* ---------- faq ---------- */
+  details{border:1px solid var(--hair); border-radius:var(--r-sm); margin-bottom:11px;
+          background:var(--panel); overflow:hidden}
+  summary{padding:19px 24px; cursor:pointer; font-weight:600; font-size:15.5px;
+          list-style:none; display:flex; align-items:center; gap:14px;
+          transition:background .2s}
+  summary:hover{background:var(--panel-2)}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:'+'; font-family:var(--mono); color:var(--red);
+                  font-size:17px; flex-shrink:0; transition:text-shadow .25s}
+  summary:hover::before{text-shadow:0 0 14px var(--red-glow)}
+  details[open]{border-color:rgba(216,26,26,.3)}
+  details[open] summary::before{content:'−'}
+  details p{padding:0 24px 22px 52px; color:var(--dim); font-size:14.5px}
+  details p + p{padding-top:0}
+  details code{font-family:var(--mono); font-size:13px; background:rgba(255,255,255,.06);
+               padding:2px 7px; border-radius:5px; color:var(--text)}
+
+  /* ---------- appel final ---------- */
+  .final{
+    border:1px solid var(--hair); border-radius:var(--r-lg); padding:64px 34px;
+    text-align:center; background:linear-gradient(180deg,var(--panel),var(--bg));
+    box-shadow:var(--shadow); position:relative; overflow:hidden;
+  }
+  .final::before{
+    content:''; position:absolute; inset:-60% 20% auto; height:150%;
+    background:
+      radial-gradient(ellipse 46% 40% at 50% 62%,var(--red-soft),transparent 70%),
+      radial-gradient(ellipse at center,rgba(255,255,255,.09),transparent 60%);
+    pointer-events:none;
+  }
+  /* filet lumineux en haut de l'encart */
+  .final::after{
+    content:''; position:absolute; top:0; left:16%; right:16%; height:1px;
+    background:linear-gradient(90deg,transparent,var(--red),transparent);
+    box-shadow:0 0 18px var(--red-glow);
+  }
+  .final h2{font-size:clamp(26px,3.4vw,38px); font-weight:700; letter-spacing:-.02em;
+            margin-bottom:14px; position:relative}
+  .final p{color:var(--dim); margin-bottom:30px; position:relative}
+  .final .cta{position:relative}
+
+  /* ---------- pied ---------- */
+  footer{border-top:1px solid var(--hair-2); padding:46px 0 60px; margin-top:20px}
+  .fgrid{display:flex; gap:40px; flex-wrap:wrap; align-items:flex-start}
+  .fgrid .col{display:flex; flex-direction:column; gap:11px}
+  .fgrid .col a{font-size:14px; color:var(--dim); transition:color .2s}
+  .fgrid .col a:hover{color:var(--text)}
+  .fbrand{margin-right:auto; max-width:34ch}
+  .fbrand p{color:var(--faint); font-size:13.5px; margin-top:12px}
+  .copy{margin-top:40px; padding-top:26px; border-top:1px solid var(--hair-2);
+        font-family:var(--mono); font-size:10.5px; letter-spacing:.16em;
+        color:var(--faint); display:flex; justify-content:space-between;
+        flex-wrap:wrap; gap:12px}
+
+  /* apparition douce au défilement */
+  .rise{opacity:0; transform:translateY(16px);
+        transition:opacity .7s cubic-bezier(.2,.7,.3,1), transform .7s cubic-bezier(.2,.7,.3,1)}
+  .rise.in{opacity:1; transform:none}
+  @media(prefers-reduced-motion:reduce){
+    .rise{opacity:1; transform:none; transition:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="/"><img src="assets/icon.png" alt="">Modium</a>
+    <nav>
+      <a href="#fonctions">Fonctionnalités</a>
+      <a href="#etapes">Comment ça marche</a>
+      <a href="#technique">Technique</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/ImSerial/modium">GitHub</a>
+    </nav>
+    <a class="btn primary" href="https://github.com/ImSerial/modium/releases/latest">Télécharger</a>
+  </div>
+</header>
+
+<div class="hero wrap">
+  <div class="mono">GTA V &middot; FiveM &middot; un seul clic</div>
+  <h1>Tes packs graphiques, <em>installés proprement</em></h1>
+  <p class="lead">
+    QuantV, NVE, ReShade, ENB. Modium télécharge le pack, comprend comment il est
+    rangé, envoie chaque fichier au bon endroit — et sait tout remettre comme avant.
+  </p>
+  <div class="cta">
+    <a class="btn primary lg" href="https://github.com/ImSerial/modium/releases/latest">⬇ Télécharger pour Windows</a>
+    <a class="btn lg" href="https://github.com/ImSerial/modium">Voir le code source</a>
+  </div>
+  <div class="under">Gratuit &middot; sans compte &middot; sans droits administrateur</div>
+  <div class="chips">
+    <span class="chip"><i></i>Open source</span>
+    <span class="chip"><i></i>Aucune configuration</span>
+    <span class="chip"><i></i>Windows 10 &amp; 11</span>
+    <span class="chip"><i></i>Désinstallation réversible</span>
+  </div>
+</div>
+
+<div class="shot rise">
+  <div class="shot-frame"><img src="assets/app.png" alt="L'interface de Modium" loading="lazy"></div>
+</div>
+
+<section id="fonctions" class="wrap">
+  <div class="head mid rise">
+    <div class="mono">Ce que ça fait</div>
+    <h2>Le travail pénible, en moins de temps qu'il n'en faut pour ouvrir l'archive</h2>
+    <p>Installer un pack à la main, c'est deviner où va chaque dossier, écraser des
+       fichiers sans savoir lesquels, et espérer pouvoir revenir en arrière.</p>
+  </div>
+  <div class="grid g3">
+    <div class="card rise">
+      <div class="ic">🔍</div>
+      <h3>Détection automatique</h3>
+      <p>Chaque créateur range son pack à sa façon. Modium parcourt tout l'arbre et
+         répartit : <code>citizen</code>, <code>mods</code> et <code>plugins</code> vers
+         FiveM, le contenu <code>GTA5</code> vers le jeu, les <code>.rpf</code> au bon
+         sous-chemin.</p>
+    </div>
+    <div class="card rise">
+      <div class="ic">↩</div>
+      <h3>Rien d'irréversible</h3>
+      <p>Chaque fichier écrasé est sauvegardé avant. Le déchargement retire exactement
+         ce qui a été posé et restaure les originaux. Si l'installation échoue en cours
+         de route, tout est annulé automatiquement.</p>
+    </div>
+    <div class="card rise">
+      <div class="ic">⏸</div>
+      <h3>Téléchargements qui reprennent</h3>
+      <p>Une coupure réseau sur un pack de 10 Go ne fait plus tout recommencer. Modium
+         reprend là où il s'était arrêté. Et un bouton Annuler, qui nettoie derrière lui.</p>
+    </div>
+    <div class="card rise">
+      <div class="ic">🔗</div>
+      <h3>Tes propres packs</h3>
+      <p>Colle un lien Google Drive, Mega ou direct. Les dossiers Drive sont reconstruits
+         fichier par fichier, les archives qu'ils contiennent extraites toutes seules.</p>
+    </div>
+    <div class="card rise">
+      <div class="ic">🔒</div>
+      <h3>Garde-fous</h3>
+      <p>Refuse de travailler si le jeu tourne. Vérifie l'espace disque sur chaque
+         disque. N'écrit jamais hors des dossiers cibles. Refuse de se désinstaller
+         tant qu'un pack est chargé.</p>
+    </div>
+    <div class="card rise">
+      <div class="ic">📦</div>
+      <h3>Toutes les archives</h3>
+      <p>zip, rar, 7z, volumes découpés en <code>.part1</code>, <code>.r00</code> ou
+         <code>.001</code>, archives imbriquées. Extraction native quand c'est possible,
+         WinRAR ou 7-Zip sinon.</p>
+    </div>
+  </div>
+</section>
+
+<section id="etapes" class="wrap" style="padding-top:0">
+  <div class="head rise">
+    <div class="mono">Comment ça marche</div>
+    <h2>Quatre étapes, dont trois sont des clics</h2>
+  </div>
+  <div class="steps rise">
+    <div class="step">
+      <div class="n">01</div>
+      <div><h3>Ouvre Modium</h3>
+      <p>Les packs disponibles s'affichent avec leur image et leur taille. Rien à
+         configurer : les dossiers FiveM et GTA V sont détectés tout seuls.</p></div>
+    </div>
+    <div class="step">
+      <div class="n">02</div>
+      <div><h3>Clique sur Charger</h3>
+      <p>Téléchargement, extraction, analyse de la structure, copie au bon endroit,
+         sauvegarde de tout ce qui est écrasé. La console décrit chaque action en direct.</p></div>
+    </div>
+    <div class="step">
+      <div class="n">03</div>
+      <div><h3>Joue</h3>
+      <p>C'est tout. Le pack est installé comme si tu l'avais fait à la main, mais sans
+         les erreurs.</p></div>
+    </div>
+    <div class="step">
+      <div class="n">04</div>
+      <div><h3>Clique sur Décharger quand tu veux changer</h3>
+      <p>Modium retire ce qu'il avait posé, remet tes fichiers d'origine et nettoie les
+         dossiers vides. Le jeu revient exactement dans son état d'avant.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" style="padding-top:0">
+  <div class="head mid rise">
+    <div class="mono">La différence</div>
+    <h2>À la main, ou avec Modium</h2>
+  </div>
+  <div class="cmp rise">
+    <div class="card">
+      <div class="t">À la main</div>
+      <ul>
+        <li><span class="mark no">✕</span><s>Ouvrir l'archive et deviner où va chaque dossier</s></li>
+        <li><span class="mark no">✕</span><s>Copier dans FiveM.app, puis dans GTA V, sans se tromper</s></li>
+        <li><span class="mark no">✕</span><s>Écraser des fichiers sans savoir lesquels</s></li>
+        <li><span class="mark no">✕</span><s>Aucun moyen fiable de revenir en arrière</s></li>
+        <li><span class="mark no">✕</span><s>Recommencer le téléchargement à la moindre coupure</s></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="t">Avec Modium</div>
+      <ul>
+        <li><span class="mark yes">✓</span>Un clic, la structure est comprise toute seule</li>
+        <li><span class="mark yes">✓</span>Chaque fichier va au bon endroit, des deux côtés</li>
+        <li><span class="mark yes">✓</span>Tout ce qui est écrasé est sauvegardé avant</li>
+        <li><span class="mark yes">✓</span>Un clic pour tout remettre comme avant</li>
+        <li><span class="mark yes">✓</span>Le téléchargement reprend où il s'était arrêté</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="technique" class="wrap" style="padding-top:0">
+  <div class="head mid rise">
+    <div class="mono">Fiche technique</div>
+    <h2>Ce qu'il faut savoir avant d'installer</h2>
+  </div>
+  <div class="specs rise">
+    <div class="spec"><div class="k">Système</div><div class="v">Windows 10 / 11</div><div class="s">64 bits</div></div>
+    <div class="spec"><div class="k">Installation</div><div class="v">Sans administrateur</div><div class="s">aucune fenêtre UAC</div></div>
+    <div class="spec"><div class="k">Poids</div><div class="v">15 Mo</div><div class="s">installeur complet</div></div>
+    <div class="spec"><div class="k">Licence</div><div class="v">Open source</div><div class="s">code lisible sur GitHub</div></div>
+    <div class="spec"><div class="k">Hébergeurs</div><div class="v">Drive · Mega · direct</div><div class="s">fichiers et dossiers</div></div>
+    <div class="spec"><div class="k">Archives</div><div class="v">zip · rar · 7z</div><div class="s">multi-volumes inclus</div></div>
+    <div class="spec"><div class="k">Données</div><div class="v">Locales</div><div class="s">aucun compte, aucun envoi</div></div>
+    <div class="spec"><div class="k">Désinstallation</div><div class="v">Propre</div><div class="s">le jeu revient à l'état initial</div></div>
+  </div>
+</section>
+
+<section id="faq" class="wrap" style="padding-top:0">
+  <div class="head mid rise">
+    <div class="mono">Questions</div>
+    <h2>Ce qu'on nous demande le plus</h2>
+  </div>
+  <div class="rise">
+    <details>
+      <summary>Windows affiche « Windows a protégé votre PC », c'est grave ?</summary>
+      <p>Non. Ça veut dire que l'application n'est pas signée par un certificat payant,
+         ce qui coûte plusieurs centaines d'euros par an. Clique sur
+         <code>Informations complémentaires</code> puis <code>Exécuter quand même</code>.</p>
+      <p>Si ça te dérange, tout le code source est public : tu peux le lire, et même
+         compiler l'application toi-même.</p>
+    </details>
+    <details>
+      <summary>Est-ce que ça peut casser mon jeu ?</summary>
+      <p>Modium sauvegarde chaque fichier avant de l'écraser et garde la trace exacte de
+         ce qu'il a installé. Un clic sur Décharger remet tout en place. Si une
+         installation échoue en cours de route, elle est annulée automatiquement.</p>
+      <p>Le désinstalleur refuse même de partir tant qu'un pack est chargé, pour ne pas
+         emporter les sauvegardes de tes fichiers d'origine.</p>
+    </details>
+    <details>
+      <summary>Faut-il installer autre chose ?</summary>
+      <p>Non pour les packs en <code>.zip</code>. Pour les <code>.rar</code>, il faut
+         WinRAR ou 7-Zip sur le PC — ce sont des formats que Windows ne sait pas ouvrir
+         seul.</p>
+    </details>
+    <details>
+      <summary>Je peux ajouter mes propres packs ?</summary>
+      <p>Oui. Dans <code>Options → Mes packs</code>, colle un lien Google Drive (fichier
+         ou dossier entier), Mega, ou n'importe quel lien direct vers une archive. Tu peux
+         aussi héberger ta propre liste de packs et pointer Modium dessus.</p>
+    </details>
+    <details>
+      <summary>Pourquoi faut-il fermer FiveM et GTA V ?</summary>
+      <p>Parce que les jeux verrouillent leurs fichiers. Modium refuse de travailler
+         tant qu'ils tournent : sinon l'installation s'arrêterait au milieu, en laissant
+         le jeu dans un état incohérent.</p>
+    </details>
+  </div>
+</section>
+
+<section class="wrap" style="padding-top:0">
+  <div class="final rise">
+    <h2>Prêt en une minute</h2>
+    <p>Télécharge, double-clique, choisis un pack.</p>
+    <div class="cta">
+      <a class="btn primary lg" href="https://github.com/ImSerial/modium/releases/latest">⬇ Télécharger Modium</a>
+      <a class="btn lg" href="https://github.com/ImSerial/modium">Code source</a>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="fgrid">
+    <div class="fbrand">
+      <a class="brand" href="/"><img src="assets/icon.png" alt="">Modium</a>
+      <p>Installe et désinstalle tes packs graphiques FiveM en un clic. Gratuit,
+         open source, sans compte.</p>
+    </div>
+    <div class="col">
+      <div class="mono">Produit</div>
+      <a href="https://github.com/ImSerial/modium/releases/latest">Télécharger</a>
+      <a href="#fonctions">Fonctionnalités</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="col">
+      <div class="mono">Code</div>
+      <a href="https://github.com/ImSerial/modium">Dépôt GitHub</a>
+      <a href="https://github.com/ImSerial/modium/releases">Versions</a>
+      <a href="https://github.com/ImSerial/modium/issues">Signaler un bug</a>
+    </div>
+    <div class="col">
+      <div class="mono">Liens</div>
+      <a href="https://uxqt.site">uxqt.site</a>
+    </div>
+  </div>
+  <div class="copy">
+    <span>Modium — projet indépendant, sans lien avec Rockstar Games ni Cfx.re</span>
+    <span>modium.xyz</span>
+  </div>
+</footer>
+
+<script>
+  // apparition au défilement, sans dépendance
+  const io = new IntersectionObserver((es) => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.rise').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
