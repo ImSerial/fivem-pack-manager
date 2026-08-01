@@ -95,6 +95,11 @@ if not ONLY_ISS:
 
     write_version_info(v)
 
+    # une instance qui tourne verrouille dist\ : PyInstaller echoue alors sur
+    # un PermissionError peu parlant. On ferme avant de construire.
+    subprocess.run(["taskkill", "/IM", f"{NAME}.exe", "/F"],
+                   capture_output=True)
+
     # --onedir et non --onefile : en onefile, les 17 Mo sont redecompresses
     # dans le dossier temporaire A CHAQUE lancement, d'ou plusieurs secondes
     # d'attente avant l'ouverture de la fenetre. L'installeur pose un dossier,
