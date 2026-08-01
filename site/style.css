@@ -1,0 +1,483 @@
+:root{
+  --bg:#000000; --bg-2:#050506; --panel:#070708; --panel-2:#0d0d10;
+  --hair:rgba(255,255,255,.08); --hair-2:rgba(255,255,255,.045);
+  --text:#f0f0f3; --dim:#a4a4ae; --faint:#6a6a76;
+  --accent:#ffffff;
+  --red:#d81a1a; --red-hi:#ff3d3d;
+  --red-glow:rgba(216,26,26,.55); --red-soft:rgba(216,26,26,.14);
+  --mono:'Cascadia Mono',Consolas,ui-monospace,'Courier New',monospace;
+  --font:'Segoe UI Variable Display','Segoe UI',system-ui,-apple-system,sans-serif;
+  --r-sm:10px; --r:16px; --r-lg:24px;
+  --shadow:0 30px 70px -24px rgba(0,0,0,.85);
+  --maxw:1160px;
+  --ease:cubic-bezier(.22,.68,.28,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font);
+  line-height:1.65; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+a{color:inherit; text-decoration:none}
+img{max-width:100%; display:block}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 26px}
+
+/* ─── couches de fond ───────────────────────────────────────────── */
+.grille,.aura,.grain{position:fixed; inset:0; pointer-events:none}
+.grille{
+  z-index:-2;
+  background-image:linear-gradient(var(--hair-2) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--hair-2) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 95%);
+  transform:translateY(var(--par,0px));
+}
+.aura{
+  z-index:-4;
+  background:
+    radial-gradient(ellipse 34% 26% at 50% 4%,var(--red-soft),transparent 70%),
+    radial-gradient(ellipse 62% 42% at 50% -6%,rgba(255,255,255,.07),transparent 70%);
+  animation:respire 19s ease-in-out infinite;
+  transform-origin:50% 0%;
+}
+/* periodes volontairement premieres entre elles : les halos ne se
+   resynchronisent jamais, le fond ne se repete pas a l'oeil */
+@keyframes respire{
+  0%,100%{opacity:.75; transform:scale(1) translateY(0)}
+  50%{opacity:1; transform:scale(1.13) translateY(1.5%)}
+}
+/* halos rouges decoratifs : sous la capture et dans l'encart final */
+@keyframes pulse-halo{
+  0%,100%{opacity:.4; transform:scale(.92)}
+  50%{opacity:.75; transform:scale(1.08)}
+}
+/* deux nappes qui derivent lentement : le fond n'est jamais deux fois pareil */
+.nappe{position:fixed; inset:-30% -20%; z-index:-5; pointer-events:none; filter:blur(70px)}
+.nappe.a{
+  background:radial-gradient(ellipse 26% 30% at 30% 40%,rgba(216,26,26,.14),transparent 65%);
+  animation:derive-a 34s ease-in-out infinite alternate;
+}
+.nappe.b{
+  background:radial-gradient(ellipse 24% 26% at 72% 60%,rgba(255,255,255,.055),transparent 65%);
+  animation:derive-b 46s ease-in-out infinite alternate;
+}
+@keyframes derive-a{
+  0%{transform:translate3d(-6%,-4%,0) scale(1)}
+  50%{transform:translate3d(8%,6%,0) scale(1.18)}
+  100%{transform:translate3d(-3%,9%,0) scale(.95)}
+}
+@keyframes derive-b{
+  0%{transform:translate3d(5%,6%,0) scale(1.05)}
+  50%{transform:translate3d(-8%,-5%,0) scale(.9)}
+  100%{transform:translate3d(4%,-8%,0) scale(1.15)}
+}
+/* champ de particules */
+.champ{position:fixed; inset:0; z-index:-3; pointer-events:none; opacity:.9}
+/* grain : SVG en ligne, aucun fichier a telecharger */
+.grain{
+  z-index:9998; opacity:.035; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* halo qui suit la souris */
+.torche{
+  position:fixed; z-index:-1; width:520px; height:520px; left:0; top:0;
+  margin:-260px 0 0 -260px; pointer-events:none; opacity:0;
+  transition:opacity .5s;
+  background:radial-gradient(circle,rgba(216,26,26,.10),transparent 62%);
+  transform:translate3d(var(--tx,50vw),var(--ty,20vh),0);
+}
+body.pointeur .torche{opacity:1}
+
+/* ─── barre du haut ─────────────────────────────────────────────── */
+header{
+  position:sticky; top:0; z-index:60;
+  background:rgba(0,0,0,.72); backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid transparent; transition:border-color .3s, background .3s;
+}
+header.colle{border-bottom-color:var(--hair-2); background:rgba(0,0,0,.9)}
+header .wrap{display:flex; align-items:center; gap:26px; height:68px}
+.marque{display:flex; align-items:center; gap:11px; font-weight:650; font-size:16.5px}
+.marque img{width:30px; height:30px; border-radius:9px}
+nav{display:flex; gap:26px; margin-left:auto; padding-right:2px}
+nav a{
+  font-size:14px; color:var(--dim); position:relative; padding:4px 0;
+  transition:color .25s;
+}
+nav a::after{
+  content:''; position:absolute; left:0; right:0; bottom:-2px; height:1px;
+  background:var(--red); transform:scaleX(0); transform-origin:left;
+  transition:transform .3s var(--ease); box-shadow:0 0 10px var(--red-glow);
+}
+nav a:hover,nav a.actif{color:var(--text)}
+nav a:hover::after,nav a.actif::after{transform:scaleX(1)}
+@media(max-width:900px){nav{display:none}}
+
+/* ─── boutons ───────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex; align-items:center; gap:9px; justify-content:center;
+  border-radius:999px; font-family:var(--mono); font-size:11px;
+  letter-spacing:.18em; text-transform:uppercase; padding:0 22px; height:40px;
+  border:1px solid var(--hair); background:#000;
+  color:var(--text); cursor:pointer; white-space:nowrap; position:relative;
+  overflow:hidden; transition:border-color .25s, box-shadow .25s, transform .18s var(--ease);
+}
+.btn>*{position:relative; z-index:1}
+.btn::before{
+  content:''; position:absolute; inset:0; opacity:0; transition:opacity .3s;
+  background:radial-gradient(160px circle at var(--mx,50%) var(--my,50%),
+             var(--red-soft),transparent 70%);
+}
+.btn:hover{border-color:var(--red); box-shadow:0 0 26px -6px var(--red-glow)}
+.btn:hover::before{opacity:1}
+.btn:active{transform:scale(.97)}
+.btn.primary{
+  background:var(--accent); color:#000; border-color:var(--accent); font-weight:700;
+}
+.btn.primary::before{background:radial-gradient(160px circle at var(--mx,50%) var(--my,50%),
+                     rgba(216,26,26,.28),transparent 70%)}
+.btn.primary:hover{box-shadow:0 0 30px rgba(255,255,255,.28),0 0 54px -10px var(--red-glow)}
+.btn.lg{height:54px; padding:0 32px; font-size:12px}
+
+/* ─── néon ───────────────────────────────────────────────────────
+   Sur du texte en dégradé (background-clip:text), text-shadow est masqué
+   par le fond découpé : c'est drop-shadow appliqué au glyphe qui donne la
+   lueur. Deux couches — une serrée blanche, une large rouge — sinon ça fait
+   contour net au lieu de halo. */
+.hero h1 em{
+  filter:drop-shadow(0 0 14px rgba(255,255,255,.28))
+         drop-shadow(0 0 42px rgba(216,26,26,.42));
+  animation:brille 7s linear infinite, neon-titre 5.5s ease-in-out infinite;
+}
+@keyframes neon-titre{
+  0%,100%{filter:drop-shadow(0 0 12px rgba(255,255,255,.22))
+                 drop-shadow(0 0 34px rgba(216,26,26,.34))}
+  50%{filter:drop-shadow(0 0 20px rgba(255,255,255,.34))
+             drop-shadow(0 0 58px rgba(216,26,26,.5))}
+}
+.tete h2{
+  text-shadow:0 0 26px rgba(255,255,255,.14), 0 0 60px rgba(216,26,26,.16);
+}
+.marque{text-shadow:0 0 18px rgba(255,255,255,.2); transition:text-shadow .3s}
+.marque:hover{text-shadow:0 0 14px rgba(255,255,255,.35), 0 0 34px var(--red-glow)}
+.marque img{transition:box-shadow .3s, transform .3s var(--ease)}
+.marque:hover img{box-shadow:0 0 22px -4px var(--red-glow); transform:scale(1.06)}
+
+/* bouton principal : halo permanent qui respire, franchement plus fort au survol */
+.btn.primary{
+  box-shadow:0 0 22px -6px rgba(255,255,255,.4), 0 0 40px -14px var(--red-glow);
+  animation:neon-btn 4.2s ease-in-out infinite;
+}
+@keyframes neon-btn{
+  0%,100%{box-shadow:0 0 18px -7px rgba(255,255,255,.34),0 0 34px -14px var(--red-glow)}
+  50%{box-shadow:0 0 30px -5px rgba(255,255,255,.5),0 0 58px -10px var(--red-glow)}
+}
+.btn.primary:hover{
+  animation:none;
+  box-shadow:0 0 34px -3px rgba(255,255,255,.55), 0 0 70px -8px var(--red-glow);
+}
+/* numéros d'étapes : néon rouge permanent, plus vif au survol */
+.etape .n{text-shadow:0 0 16px rgba(216,26,26,.4)}
+.etape:hover .n{text-shadow:0 0 24px var(--red-glow), 0 0 50px var(--red-glow)}
+/* pastilles du héro et étiquettes : la puce rouge devient une vraie diode */
+.bulle i,.etiq::before{
+  box-shadow:0 0 8px var(--red-glow), 0 0 18px var(--red-glow),
+             0 0 34px rgba(216,26,26,.35);
+}
+.duel .marq.non{box-shadow:0 0 16px -2px var(--red-glow), 0 0 30px -6px var(--red-glow)}
+
+/* ─── héro ──────────────────────────────────────────────────────── */
+.hero{padding:104px 0 80px; text-align:center; position:relative}
+.hero h1{
+  font-size:clamp(40px,6.6vw,74px); line-height:1.04; font-weight:750;
+  letter-spacing:-.03em; margin:0 auto 22px; max-width:15ch;
+}
+.hero h1 em{
+  font-style:normal; background-size:220% 100%;
+  background-image:linear-gradient(100deg,#fff 0%,#fff 34%,#8d8d97 52%,#fff 70%,#fff 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+@keyframes brille{to{background-position:-220% 0}}
+.lead{font-size:18.5px; color:var(--dim); max-width:58ch; margin:0 auto 36px}
+.cta{display:flex; gap:14px; justify-content:center; flex-wrap:wrap}
+.sous{margin-top:20px; font-family:var(--mono); font-size:11px;
+      letter-spacing:.14em; color:var(--faint)}
+.bulles{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:38px}
+.bulle{
+  display:inline-flex; align-items:center; gap:10px; padding:8px 18px;
+  border:1px solid rgba(216,26,26,.3); border-radius:999px;
+  background:linear-gradient(180deg,rgba(216,26,26,.07),rgba(216,26,26,.02));
+  font-family:var(--mono); font-size:10px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--text); cursor:default;
+  transition:border-color .25s, box-shadow .25s, transform .25s var(--ease), color .25s;
+}
+.bulle i{width:6px; height:6px; border-radius:50%; background:var(--red);
+         box-shadow:0 0 8px var(--red-glow),0 0 16px var(--red-glow)}
+.bulle:hover{border-color:var(--red); color:#fff;
+             background:linear-gradient(180deg,rgba(216,26,26,.16),rgba(216,26,26,.05));
+             box-shadow:0 0 26px -5px var(--red-glow); transform:translateY(-2px)}
+
+/* ─── capture ───────────────────────────────────────────────────── */
+.capture{margin:78px auto 0; max-width:1020px; padding:0 26px; position:relative;
+         perspective:1400px}
+.capture::before{
+  content:''; position:absolute; inset:auto 14% -40px; height:150px; z-index:-1;
+  background:radial-gradient(ellipse at center,var(--red-glow),transparent 70%);
+  filter:blur(46px); opacity:.55;
+  animation:pulse-halo 13s ease-in-out infinite;
+}
+.cadre{
+  border:1px solid var(--hair); border-radius:var(--r-lg); overflow:hidden;
+  box-shadow:var(--shadow); background:var(--panel);
+  transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  transition:transform .5s var(--ease), border-color .4s, box-shadow .4s;
+  will-change:transform;
+}
+.cadre:hover{border-color:rgba(216,26,26,.4);
+             box-shadow:var(--shadow),0 0 70px -20px var(--red-glow)}
+
+/* ─── sections ──────────────────────────────────────────────────── */
+section{padding:112px 0}
+.tete{max-width:66ch; margin-bottom:56px}
+.tete.centre{margin-left:auto; margin-right:auto; text-align:center}
+.etiq{
+  display:inline-flex; align-items:center; gap:9px; font-family:var(--mono);
+  font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--faint);
+}
+.etiq::before{content:''; width:5px; height:5px; border-radius:50%; background:var(--red);
+              box-shadow:0 0 10px var(--red-glow),0 0 20px var(--red-glow)}
+.tete h2{font-size:clamp(29px,3.8vw,42px); line-height:1.14; font-weight:730;
+         letter-spacing:-.025em; margin:0 0 15px}
+.tete p{color:var(--dim); font-size:16.5px}
+
+.grid{display:grid; gap:18px}
+.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:940px){.g3{grid-template-columns:1fr}}
+
+.carte{
+  border:1px solid var(--hair); border-radius:var(--r); padding:30px;
+  background:linear-gradient(180deg,var(--panel),var(--bg-2));
+  position:relative; overflow:hidden;
+  transition:border-color .3s, transform .3s var(--ease), box-shadow .3s;
+}
+.carte::after{
+  content:''; position:absolute; inset:0; opacity:0; pointer-events:none;
+  transition:opacity .35s;
+  background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),
+             rgba(216,26,26,.13),transparent 72%);
+}
+.carte:hover{border-color:rgba(216,26,26,.4); transform:translateY(-4px);
+             box-shadow:0 0 40px -16px var(--red-glow)}
+.carte:hover::after{opacity:1}
+.carte h3{font-size:17.5px; font-weight:660; margin:16px 0 10px; letter-spacing:-.01em}
+.carte p{color:var(--dim); font-size:14.5px}
+.ic svg{width:20px; height:20px; color:var(--text)}
+.carte:hover .ic svg{color:var(--red-hi)}
+.btn svg{width:15px; height:15px; margin-right:2px; vertical-align:-2px}
+.btn span{display:inline-flex; align-items:center; gap:9px}
+.ic{
+  width:40px; height:40px; border-radius:12px; display:grid; place-items:center;
+  border:1px solid var(--hair); background:#000;
+  transition:border-color .3s, box-shadow .3s, transform .3s var(--ease);
+}
+.carte:hover .ic{border-color:rgba(216,26,26,.5); transform:translateY(-2px)
+                 rotate(-4deg); box-shadow:0 0 20px -5px var(--red-glow)}
+code{font-family:var(--mono); font-size:.88em; background:#000;
+     border:1px solid var(--hair-2);
+     padding:2px 7px; border-radius:5px}
+
+/* ─── étapes ────────────────────────────────────────────────────── */
+.etapes{border:1px solid var(--hair); border-radius:var(--r); overflow:hidden;
+        background:var(--panel)}
+.etape{display:grid; grid-template-columns:82px 1fr; gap:24px; padding:28px 30px;
+       border-bottom:1px solid var(--hair-2); align-items:start; position:relative;
+       transition:background .3s}
+.etape:last-child{border-bottom:0}
+.etape::before{
+  content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:var(--red); transform:scaleY(0); transform-origin:top;
+  transition:transform .4s var(--ease); box-shadow:0 0 14px var(--red-glow);
+}
+.etape:hover{background:rgba(216,26,26,.045)}
+.etape:hover::before{transform:scaleY(1)}
+.etape .n{font-family:var(--mono); font-size:28px; font-weight:750;
+          color:rgba(216,26,26,.5); transition:color .3s, text-shadow .3s}
+.etape:hover .n{color:var(--red); text-shadow:0 0 20px var(--red-glow)}
+.etape h3{font-size:17px; font-weight:660; margin-bottom:7px}
+.etape p{color:var(--dim); font-size:14.5px}
+@media(max-width:620px){.etape{grid-template-columns:54px 1fr; gap:16px; padding:22px}}
+
+/* ─── comparatif ────────────────────────────────────────────────── */
+.duel{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+@media(max-width:940px){.duel{grid-template-columns:1fr}}
+.duel .carte{padding:0}
+.duel .t{padding:22px 28px; border-bottom:1px solid var(--hair-2);
+         font-family:var(--mono); font-size:11px; letter-spacing:.2em;
+         text-transform:uppercase; color:var(--faint)}
+.duel ul{list-style:none; padding:12px 28px 28px}
+.duel li{display:flex; gap:14px; padding:12px 0; font-size:14.5px; color:var(--dim);
+         border-bottom:1px solid var(--hair-2)}
+.duel li:last-child{border-bottom:0}
+.duel li s{color:var(--faint); text-decoration:none}
+.marq{flex-shrink:0; width:20px; height:20px; border-radius:50%; display:grid;
+      place-items:center; margin-top:2px}
+.marq svg{width:11px; height:11px}
+.non{background:rgba(216,26,26,.16); color:var(--red-hi);
+     box-shadow:0 0 14px -2px var(--red-glow)}
+.oui{background:#000; border:1px solid rgba(255,255,255,.35); color:var(--text)}
+
+/* ─── fiche technique ───────────────────────────────────────────── */
+.specs{display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+       background:var(--hair-2); border:1px solid var(--hair);
+       border-radius:var(--r); overflow:hidden}
+@media(max-width:940px){.specs{grid-template-columns:repeat(2,1fr)}}
+.spec{background:var(--bg-2); padding:28px 24px; transition:background .3s}
+.spec:hover{background:var(--panel-2)}
+.spec .k{font-family:var(--mono); font-size:10px; letter-spacing:.2em;
+         text-transform:uppercase; color:var(--faint); margin-bottom:10px;
+         transition:color .3s, text-shadow .3s}
+.spec:hover .k{color:var(--red); text-shadow:0 0 14px var(--red-glow)}
+.spec .v{font-size:15.5px; font-weight:640}
+.spec .s{font-size:13px; color:var(--dim); margin-top:4px}
+
+/* ─── faq ───────────────────────────────────────────────────────── */
+details{border:1px solid var(--hair); border-radius:var(--r-sm); margin-bottom:12px;
+        background:var(--panel); overflow:hidden; transition:border-color .3s}
+details[open]{border-color:rgba(216,26,26,.32)}
+summary{padding:20px 26px; cursor:pointer; font-weight:620; font-size:15.5px;
+        list-style:none; display:flex; align-items:center; gap:16px;
+        transition:background .25s}
+summary:hover{background:var(--panel-2)}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'+'; font-family:var(--mono); color:var(--red); font-size:18px;
+                flex-shrink:0; transition:transform .3s var(--ease), text-shadow .25s}
+summary:hover::before{text-shadow:0 0 14px var(--red-glow)}
+details[open] summary::before{content:'+'; transform:rotate(45deg)}
+details .rep{padding:0 26px 24px 58px; color:var(--dim); font-size:14.5px}
+details .rep p+p{margin-top:12px}
+
+
+/* ─── animations de survol ──────────────────────────────────────── */
+/* filet lumineux qui traverse le haut de la carte */
+.carte::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:1px; z-index:1;
+  background:linear-gradient(90deg,transparent,var(--red),transparent);
+  transform:translateX(-100%); opacity:0;
+}
+.carte:hover::before{animation:balaye .85s var(--ease) forwards}
+@keyframes balaye{
+  0%{transform:translateX(-100%); opacity:0}
+  25%{opacity:1}
+  100%{transform:translateX(100%); opacity:0}
+}
+.carte h3{transition:transform .35s var(--ease)}
+.carte:hover h3{transform:translateX(4px)}
+
+/* reflet diagonal qui traverse le bouton */
+.btn::after{
+  content:''; position:absolute; top:-60%; bottom:-60%; width:38px;
+  left:-60px; transform:skewX(-18deg); pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);
+}
+.btn:hover::after{animation:reflet .7s var(--ease)}
+.btn.primary::after{background:linear-gradient(90deg,transparent,rgba(216,26,26,.3),transparent)}
+@keyframes reflet{to{left:120%}}
+
+/* pastilles : léger grossissement en plus du soulèvement */
+.bulle{
+  position:relative; overflow:hidden;
+  transition:border-color .3s, box-shadow .3s, transform .35s var(--ease),
+             color .25s, background .35s, letter-spacing .35s var(--ease);
+}
+/* reflet qui traverse la pastille */
+.bulle::after{
+  content:''; position:absolute; top:-60%; bottom:-60%; width:30px; left:-50px;
+  transform:skewX(-18deg); pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+}
+.bulle:hover::after{animation:reflet .75s var(--ease)}
+.bulle:hover{transform:translateY(-3px) scale(1.05); letter-spacing:.2em}
+/* la diode grossit et s'allume */
+.bulle i{transition:transform .35s var(--ease), box-shadow .35s}
+.bulle:hover i{
+  transform:scale(1.45);
+  box-shadow:0 0 12px var(--red-hi),0 0 26px var(--red-glow),0 0 44px var(--red-glow);
+}
+
+/* fiche technique : liseré rouge qui pousse depuis la gauche */
+.spec{position:relative}
+.spec::before{
+  content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:var(--red); box-shadow:0 0 14px var(--red-glow);
+  transform:scaleY(0); transform-origin:bottom; transition:transform .35s var(--ease);
+}
+.spec:hover::before{transform:scaleY(1)}
+.spec .v{transition:transform .35s var(--ease)}
+.spec:hover .v{transform:translateX(5px)}
+
+/* étapes : le titre avance avec la barre */
+.etape h3{transition:transform .35s var(--ease)}
+.etape:hover h3{transform:translateX(5px)}
+.etape .n{transition:color .3s, text-shadow .3s, transform .35s var(--ease)}
+.etape:hover .n{transform:scale(1.12)}
+
+/* FAQ : la question glisse, le + tourne déjà à l'ouverture */
+summary{transition:background .25s, padding-left .3s var(--ease)}
+summary:hover{padding-left:32px}
+summary::before{transition:transform .3s var(--ease), text-shadow .25s, color .25s}
+summary:hover::before{color:var(--red-hi)}
+
+/* comparatif : la ligne survolée se détache */
+.duel li{transition:color .25s, transform .3s var(--ease)}
+.duel li:hover{color:var(--text); transform:translateX(4px)}
+.marq{transition:transform .3s var(--ease), box-shadow .3s}
+.duel li:hover .marq{transform:scale(1.15)}
+
+/* liens du pied : la puce apparaît */
+.fgrid .col a{position:relative; padding-left:0}
+.fgrid .col a::before{
+  content:''; position:absolute; left:-11px; top:50%; width:4px; height:4px;
+  border-radius:50%; background:var(--red); transform:translateY(-50%) scale(0);
+  transition:transform .3s var(--ease); box-shadow:0 0 10px var(--red-glow);
+}
+.fgrid .col a:hover::before{transform:translateY(-50%) scale(1)}
+
+@media(prefers-reduced-motion:reduce){
+  .carte:hover::before,.btn:hover::after{animation:none}
+}
+
+/* ─── pied ──────────────────────────────────────────────────────── */
+footer{border-top:1px solid var(--hair-2); padding:52px 0 64px; margin-top:24px}
+.fgrid{display:flex; gap:46px; flex-wrap:wrap; align-items:flex-start}
+.fgrid .col{display:flex; flex-direction:column; gap:12px}
+.fgrid .col a{font-size:14px; color:var(--dim); transition:color .25s, transform .25s}
+.fgrid .col a:hover{color:var(--text); transform:translateX(3px)}
+.fmarque{margin-right:auto; max-width:34ch}
+.fmarque p{color:var(--faint); font-size:13.5px; margin-top:14px}
+.copy{margin-top:44px; padding-top:28px; border-top:1px solid var(--hair-2);
+      font-family:var(--mono); font-size:10.5px; letter-spacing:.16em;
+      color:var(--faint); display:flex; justify-content:space-between;
+      flex-wrap:wrap; gap:12px}
+
+/* ─── apparition au défilement ──────────────────────────────────── */
+.monte{opacity:0; transform:translateY(22px);
+       transition:opacity .8s var(--ease), transform .8s var(--ease);
+       transition-delay:var(--d,0ms)}
+.monte.vu{opacity:1; transform:none}
+.d1{--d:80ms} .d2{--d:160ms} .d3{--d:240ms} .d4{--d:360ms}
+.sans-haut{padding-top:0}
+
+@media(prefers-reduced-motion:reduce){
+  /* On ne coupe PLUS toutes les transitions. Un effet de survol est declenche
+     par l'utilisateur, dure moins d'une demi-seconde et ne deplace rien a
+     l'ecran : ce n'est pas ce que ce reglage cherche a eviter. On desactive
+     seulement ce qui bouge tout seul ou ce qui suit le defilement. */
+  .hero h1 em{animation:brille 7s linear infinite}   /* reflet oui, pulsation non */
+  .btn.primary{animation:none}
+  .carte:hover::before,.btn:hover::after{animation:none}
+  .monte{opacity:1; transform:none; transition:none}
+  html{scroll-behavior:auto}
+  .torche,.grain{display:none}
+  /* les nappes et les particules restent animees : derive tres lente, sans
+     defilement ni parallaxe, elle ne provoque pas de gene vestibulaire */
+  .nappe{animation-duration:80s} .aura{animation-duration:40s}
+}

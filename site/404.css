@@ -1,0 +1,115 @@
+:root{
+  --bg:#000; --text:#f0f0f3; --dim:#a4a4ae; --faint:#6a6a76;
+  --hair:rgba(255,255,255,.08); --hair-2:rgba(255,255,255,.045);
+  --red:#d81a1a; --red-hi:#ff3d3d;
+  --red-glow:rgba(216,26,26,.55); --red-soft:rgba(216,26,26,.14);
+  --mono:'Cascadia Mono',Consolas,ui-monospace,monospace;
+  --font:'Segoe UI Variable Display','Segoe UI',system-ui,-apple-system,sans-serif;
+  --ease:cubic-bezier(.22,.68,.28,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font);
+  min-height:100vh; display:grid; place-items:center; padding:40px 26px;
+  text-align:center; overflow-x:hidden; -webkit-font-smoothing:antialiased;
+}
+a{color:inherit; text-decoration:none}
+
+/* mêmes couches de fond que la page d'accueil, en plus sobre */
+.nappe,.grille,.grain{position:fixed; inset:0; pointer-events:none}
+.nappe{inset:-30% -20%; z-index:-3; filter:blur(70px)}
+.nappe.a{background:radial-gradient(ellipse 26% 30% at 42% 45%,rgba(216,26,26,.16),transparent 65%);
+         animation:derive-a 34s ease-in-out infinite alternate}
+.nappe.b{background:radial-gradient(ellipse 24% 26% at 64% 55%,rgba(255,255,255,.05),transparent 65%);
+         animation:derive-b 46s ease-in-out infinite alternate}
+@keyframes derive-a{0%{transform:translate3d(-6%,-4%,0) scale(1)}
+  50%{transform:translate3d(8%,6%,0) scale(1.18)}100%{transform:translate3d(-3%,9%,0) scale(.95)}}
+@keyframes derive-b{0%{transform:translate3d(5%,6%,0) scale(1.05)}
+  50%{transform:translate3d(-8%,-5%,0) scale(.9)}100%{transform:translate3d(4%,-8%,0) scale(1.15)}}
+.grille{
+  z-index:-2;
+  background-image:linear-gradient(var(--hair-2) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--hair-2) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,#000 20%,transparent 90%);
+}
+.grain{
+  z-index:9998; opacity:.035; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.boite{max-width:56ch; position:relative}
+.logo{display:inline-flex; align-items:center; gap:11px; font-weight:650; font-size:16.5px;
+      margin-bottom:44px; text-shadow:0 0 18px rgba(255,255,255,.2)}
+.logo img{width:30px; height:30px; border-radius:9px}
+
+/* le 404 : chiffres géants en néon, avec une coupure qui passe dessus */
+.code{
+  font-family:var(--mono); font-weight:700; line-height:.92;
+  font-size:clamp(96px,22vw,210px); letter-spacing:-.04em; position:relative;
+  background-image:linear-gradient(100deg,#fff 0%,#fff 32%,#8d8d97 52%,#fff 72%,#fff 100%);
+  background-size:220% 100%;
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation:brille 7s linear infinite, neon 5.5s ease-in-out infinite;
+}
+@keyframes brille{to{background-position:-220% 0}}
+@keyframes neon{
+  0%,100%{filter:drop-shadow(0 0 14px rgba(255,255,255,.22))
+                 drop-shadow(0 0 40px rgba(216,26,26,.36))}
+  50%{filter:drop-shadow(0 0 24px rgba(255,255,255,.36))
+             drop-shadow(0 0 70px rgba(216,26,26,.55))}
+}
+/* balayage rouge, comme un défaut de signal */
+.code::after{
+  content:''; position:absolute; left:-6%; right:-6%; height:2px; top:46%;
+  background:linear-gradient(90deg,transparent,var(--red),transparent);
+  box-shadow:0 0 22px var(--red-glow); animation:scan 4.5s ease-in-out infinite;
+}
+@keyframes scan{
+  0%,100%{top:22%; opacity:0}
+  15%{opacity:1}
+  50%{top:74%; opacity:.9}
+  85%{opacity:0}
+}
+
+h1{font-size:clamp(21px,3.4vw,29px); font-weight:730; letter-spacing:-.02em;
+   margin:26px 0 14px; text-shadow:0 0 26px rgba(255,255,255,.14),0 0 60px rgba(216,26,26,.16)}
+p{color:var(--dim); font-size:16px; margin-bottom:34px}
+.chemin{
+  display:inline-block; font-family:var(--mono); font-size:12px; color:var(--faint);
+  border:1px solid var(--hair); border-radius:999px; padding:7px 16px;
+  margin-bottom:30px; max-width:100%; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; background:#000;
+}
+.chemin b{color:var(--red-hi); font-weight:400}
+
+.actions{display:flex; gap:13px; justify-content:center; flex-wrap:wrap}
+.btn{
+  display:inline-flex; align-items:center; gap:9px; justify-content:center;
+  border-radius:999px; font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; padding:0 26px; height:48px; border:1px solid var(--hair);
+  background:#000; color:var(--text); cursor:pointer;
+  transition:border-color .25s, box-shadow .25s, transform .18s var(--ease);
+}
+.btn svg{width:15px; height:15px}
+.btn:hover{border-color:var(--red); transform:translateY(-1px);
+           box-shadow:0 0 26px -6px var(--red-glow)}
+.btn:active{transform:scale(.97)}
+.btn.primary{
+  background:#fff; color:#000; border-color:#fff; font-weight:700;
+  animation:neon-btn 4.2s ease-in-out infinite;
+}
+@keyframes neon-btn{
+  0%,100%{box-shadow:0 0 18px -7px rgba(255,255,255,.34),0 0 34px -14px var(--red-glow)}
+  50%{box-shadow:0 0 30px -5px rgba(255,255,255,.5),0 0 58px -10px var(--red-glow)}
+}
+.btn.primary:hover{animation:none;
+  box-shadow:0 0 34px -3px rgba(255,255,255,.55),0 0 70px -8px var(--red-glow)}
+
+@media(prefers-reduced-motion:reduce){
+  /* les survols restent animes : ils sont declenches par l'utilisateur */
+  .code{animation:brille 7s linear infinite}
+  .btn.primary{animation:none}
+  .nappe{animation-duration:80s}
+  .code::after,.grain{display:none}
+}
